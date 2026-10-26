@@ -3,41 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>Prototipo SAT Inundaciones · Etapa 4</title>
 <style>
-:root{--bg:#eef3f4;--card:#fff;--ink:#12303b;--mut:#5b7480;--line:#cfdce1;--water:#1f6f8b;--g:#2e8b57;--y:#d99a00;--r:#c23b2e;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1a1f;--card:#16262d;--ink:#e3eef2;--mut:#93aab4;--line:#2b414a;--water:#5fb3d1;--g:#4fc083;--y:#f0b92e;--r:#ee6a5c;color-scheme:dark}}
+:root{
+  --bg:#0b161b;--bg2:#10222a;--card:#14252c;--card2:#1a2f38;
+  --ink:#e3eef2;--mut:#93aab4;--line:#27414b;
+  --water:#5fb3d1;--water2:#3a98bb;
+  --g:#4fc083;--y:#f0b92e;--r:#ee6a5c;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
-header{padding:22px 20px 8px;max-width:1100px;margin:auto}
-h1{font:700 26px/1.2 Georgia,"Times New Roman",serif;margin:0 0 4px}
+html{background:var(--bg)}
+body{
+  margin:0;color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(900px 420px at 15% -10%,rgba(95,179,209,.12),transparent 60%),
+    radial-gradient(700px 360px at 100% 0%,rgba(79,192,131,.07),transparent 60%),
+    var(--bg);
+  background-attachment:fixed;min-height:100vh
+}
+header{padding:26px 20px 8px;max-width:1100px;margin:auto}
+h1{font:700 26px/1.2 Georgia,"Times New Roman",serif;margin:0 0 4px;letter-spacing:.2px}
 h2{font:700 18px Georgia,serif;margin:0 0 10px}
 .sub{color:var(--mut);margin:0}
 main{max-width:1100px;margin:auto;padding:12px 20px 40px;display:grid;gap:16px}
-section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+section{
+  background:linear-gradient(180deg,var(--card2),var(--card));
+  border:1px solid var(--line);border-radius:14px;padding:18px;
+  box-shadow:var(--shadow)
+}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 label{display:block;margin:10px 0 2px;font-weight:600}
-input[type=range]{width:100%}
-button{font:inherit;font-weight:600;background:var(--water);color:#fff;border:0;border-radius:6px;padding:8px 14px;cursor:pointer;margin:6px 6px 0 0}
-button.alt{background:transparent;color:var(--water);border:1.5px solid var(--water)}
-button:focus-visible,input:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--water)}
+input[type=checkbox]{accent-color:var(--water)}
+
+button{
+  font:inherit;font-weight:600;letter-spacing:.2px;
+  background:linear-gradient(180deg,#6cc3e2 0%,var(--water2) 100%);
+  color:#06212b;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;margin:8px 8px 0 0;
+  box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 4px 10px rgba(58,152,187,.35),0 10px 24px rgba(0,0,0,.35);
+  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease,background .15s ease
+}
+button:hover{
+  transform:translateY(-2px);filter:brightness(1.08);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 8px 18px rgba(58,152,187,.5),0 14px 30px rgba(0,0,0,.4)
+}
+button:active{
+  transform:translateY(0) scale(.98);
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 2px 6px rgba(58,152,187,.35)
+}
+button.alt{
+  background:rgba(95,179,209,.08);color:var(--water);border:1.5px solid rgba(95,179,209,.6);
+  box-shadow:0 4px 12px rgba(0,0,0,.3)
+}
+button.alt:hover{
+  background:rgba(95,179,209,.18);border-color:var(--water);filter:none;
+  box-shadow:0 0 0 3px rgba(95,179,209,.12),0 8px 20px rgba(0,0,0,.4)
+}
+button.alt:active{background:rgba(95,179,209,.25);box-shadow:0 2px 6px rgba(0,0,0,.35)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+
+select{
+  font:inherit;color:var(--ink);background:var(--card2);border:1.5px solid var(--line);
+  border-radius:8px;padding:7px 10px;box-shadow:0 4px 12px rgba(0,0,0,.25)
+}
+
 .val{font-variant-numeric:tabular-nums;color:var(--water);font-weight:700}
 .tank{display:flex;gap:14px;align-items:flex-end}
-.gauge{position:relative;width:70px;height:220px;border:2px solid var(--ink);border-top:0;background:linear-gradient(var(--card),var(--card))}
-.gauge .fill{position:absolute;bottom:0;left:0;right:0;background:var(--water);opacity:.75;transition:height .3s}
+.gauge{position:relative;width:70px;height:220px;border:2px solid var(--ink);border-top:0;background:rgba(0,0,0,.25);border-radius:0 0 6px 6px}
+.gauge .fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--water),var(--water2));opacity:.85;transition:height .3s}
 .gauge .th{position:absolute;left:-6px;right:-6px;border-top:2px dashed}
-.state{display:inline-block;padding:4px 14px;border-radius:20px;color:#fff;font-weight:700}
-.s-v{background:var(--g)}.s-a{background:var(--y);color:#222}.s-r{background:var(--r)}
+.state{display:inline-block;padding:4px 14px;border-radius:20px;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.s-v{background:var(--g);color:#052214}.s-a{background:var(--y);color:#222}.s-r{background:var(--r)}
 table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
 th,td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right}
 th:first-child,td:first-child{text-align:left}
 .wrap{overflow-x:auto}
-.ch{border:1px solid var(--line);border-radius:8px;padding:10px;min-height:92px}
+.ch{
+  border:1px solid var(--line);border-radius:10px;padding:10px;min-height:92px;
+  background:rgba(0,0,0,.18);box-shadow:0 4px 14px rgba(0,0,0,.25);
+  transition:border-color .2s,box-shadow .2s
+}
 .ch b{display:block}.ch small{color:var(--mut)}
-.on{border-color:var(--r);box-shadow:inset 4px 0 0 var(--r)}
+.on{border-color:var(--r);box-shadow:inset 4px 0 0 var(--r),0 6px 20px rgba(238,106,92,.18)}
 .ok{color:var(--g);font-weight:700}.no{color:var(--r);font-weight:700}
-canvas{width:100%;max-width:520px;height:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+canvas{width:100%;max-width:520px;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .note{color:var(--mut);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
