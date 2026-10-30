@@ -1,487 +1,770 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
-<title>Prototipo SAT Inundaciones · Etapa 4</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Prototipo SAT Inundaciones · Etapa 4</title>
 
-<!-- =====================================================================
-     ESTILOS ORIGINALES DEL SIMULADOR (sin cambios)
-     ===================================================================== -->
-<style>
-:root{
-  --bg:#0b161b;--bg2:#10222a;--card:#14252c;--card2:#1a2f38;
-  --ink:#e3eef2;--mut:#93aab4;--line:#27414b;
-  --water:#5fb3d1;--water2:#3a98bb;
-  --g:#4fc083;--y:#f0b92e;--r:#ee6a5c;
-  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.35);
-  color-scheme:dark
-}
-*{box-sizing:border-box}
-html{background:var(--bg)}
-body{
-  margin:0;color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif;
-  background:
-    radial-gradient(900px 420px at 15% -10%,rgba(95,179,209,.12),transparent 60%),
-    radial-gradient(700px 360px at 100% 0%,rgba(79,192,131,.07),transparent 60%),
-    var(--bg);
-  background-attachment:fixed;min-height:100vh
-}
-header{padding:26px 20px 8px;max-width:1100px;margin:auto}
-h1{font:700 26px/1.2 Georgia,"Times New Roman",serif;margin:0 0 4px;letter-spacing:.2px}
-h2{font:700 18px Georgia,serif;margin:0 0 10px}
-.sub{color:var(--mut);margin:0}
-main{max-width:1100px;margin:auto;padding:12px 20px 40px;display:grid;gap:16px}
-section{
-  background:linear-gradient(180deg,var(--card2),var(--card));
-  border:1px solid var(--line);border-radius:14px;padding:18px;
-  box-shadow:var(--shadow)
-}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-label{display:block;margin:10px 0 2px;font-weight:600}
-input[type=range]{width:100%;accent-color:var(--water)}
-input[type=checkbox]{accent-color:var(--water)}
+  <!-- ===================================================================
+       ESTILOS 1 · SIMULADOR (diseño original)
+       =================================================================== -->
+  <style>
+    /* ---- Variables de color y base ---- */
+    :root {
+      --bg: #0b161b;  --bg2: #10222a;  --card: #14252c;  --card2: #1a2f38;
+      --ink: #e3eef2; --mut: #93aab4;  --line: #27414b;
+      --water: #5fb3d1; --water2: #3a98bb;
+      --g: #4fc083;  --y: #f0b92e;  --r: #ee6a5c;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      margin: 0; color: var(--ink);
+      font: 15px/1.5 "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 420px at 15% -10%, rgba(95,179,209,.12), transparent 60%),
+        radial-gradient(700px 360px at 100% 0%, rgba(79,192,131,.07), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
 
-button{
-  font:inherit;font-weight:600;letter-spacing:.2px;
-  background:linear-gradient(180deg,#6cc3e2 0%,var(--water2) 100%);
-  color:#06212b;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;margin:8px 8px 0 0;
-  box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 4px 10px rgba(58,152,187,.35),0 10px 24px rgba(0,0,0,.35);
-  transition:transform .15s ease,box-shadow .15s ease,filter .15s ease,background .15s ease
-}
-button:hover{
-  transform:translateY(-2px);filter:brightness(1.08);
-  box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 8px 18px rgba(58,152,187,.5),0 14px 30px rgba(0,0,0,.4)
-}
-button:active{
-  transform:translateY(0) scale(.98);
-  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 2px 6px rgba(58,152,187,.35)
-}
-button.alt{
-  background:rgba(95,179,209,.08);color:var(--water);border:1.5px solid rgba(95,179,209,.6);
-  box-shadow:0 4px 12px rgba(0,0,0,.3)
-}
-button.alt:hover{
-  background:rgba(95,179,209,.18);border-color:var(--water);filter:none;
-  box-shadow:0 0 0 3px rgba(95,179,209,.12),0 8px 20px rgba(0,0,0,.4)
-}
-button.alt:active{background:rgba(95,179,209,.25);box-shadow:0 2px 6px rgba(0,0,0,.35)}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+    /* ---- Encabezado, títulos y contenedor principal ---- */
+    header { padding: 26px 20px 8px; max-width: 1100px; margin: auto; }
+    h1 { font: 700 26px/1.2 Georgia, "Times New Roman", serif; margin: 0 0 4px; letter-spacing: .2px; }
+    h2 { font: 700 18px Georgia, serif; margin: 0 0 10px; }
+    .sub { color: var(--mut); margin: 0; }
+    main { max-width: 1100px; margin: auto; padding: 12px 20px 40px; display: grid; gap: 16px; }
+    section {
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
 
-select{
-  font:inherit;color:var(--ink);background:var(--card2);border:1.5px solid var(--line);
-  border-radius:8px;padding:7px 10px;box-shadow:0 4px 12px rgba(0,0,0,.25)
-}
+    /* ---- Controles: etiquetas, deslizadores, casillas ---- */
+    label { display: block; margin: 10px 0 2px; font-weight: 600; }
+    input[type=range]    { width: 100%; accent-color: var(--water); }
+    input[type=checkbox] { accent-color: var(--water); }
 
-.val{font-variant-numeric:tabular-nums;color:var(--water);font-weight:700}
-.tank{display:flex;gap:14px;align-items:flex-end}
-.gauge{position:relative;width:70px;height:220px;border:2px solid var(--ink);border-top:0;background:rgba(0,0,0,.25);border-radius:0 0 6px 6px}
-.gauge .fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--water),var(--water2));opacity:.85;transition:height .3s}
-.gauge .th{position:absolute;left:-6px;right:-6px;border-top:2px dashed}
-.state{display:inline-block;padding:4px 14px;border-radius:20px;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.35)}
-.s-v{background:var(--g);color:#052214}.s-a{background:var(--y);color:#222}.s-r{background:var(--r)}
-table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
-th,td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right}
-th:first-child,td:first-child{text-align:left}
-.wrap{overflow-x:auto}
-.ch{
-  border:1px solid var(--line);border-radius:10px;padding:10px;min-height:92px;
-  background:rgba(0,0,0,.18);box-shadow:0 4px 14px rgba(0,0,0,.25);
-  transition:border-color .2s,box-shadow .2s
-}
-.ch b{display:block}.ch small{color:var(--mut)}
-.on{border-color:var(--r);box-shadow:inset 4px 0 0 var(--r),0 6px 20px rgba(238,106,92,.18)}
-.ok{color:var(--g);font-weight:700}.no{color:var(--r);font-weight:700}
-canvas{width:100%;max-width:520px;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.3)}
-.note{color:var(--mut);font-size:13px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+    /* ---- Botones ---- */
+    button {
+      font: inherit; font-weight: 600; letter-spacing: .2px;
+      background: linear-gradient(180deg, #6cc3e2 0%, var(--water2) 100%);
+      color: #06212b; border: 0; border-radius: 10px;
+      padding: 9px 18px; cursor: pointer; margin: 8px 8px 0 0;
+      box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 4px 10px rgba(58,152,187,.35), 0 10px 24px rgba(0,0,0,.35);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease, background .15s ease;
+    }
+    button:hover {
+      transform: translateY(-2px); filter: brightness(1.08);
+      box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 8px 18px rgba(58,152,187,.5), 0 14px 30px rgba(0,0,0,.4);
+    }
+    button:active {
+      transform: translateY(0) scale(.98);
+      box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 2px 6px rgba(58,152,187,.35);
+    }
+    button.alt {
+      background: rgba(95,179,209,.08); color: var(--water);
+      border: 1.5px solid rgba(95,179,209,.6); box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
+    button.alt:hover {
+      background: rgba(95,179,209,.18); border-color: var(--water); filter: none;
+      box-shadow: 0 0 0 3px rgba(95,179,209,.12), 0 8px 20px rgba(0,0,0,.4);
+    }
+    button.alt:active { background: rgba(95,179,209,.25); box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--y); outline-offset: 2px; }
 
+    select {
+      font: inherit; color: var(--ink); background: var(--card2);
+      border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
 
+    /* ---- Bloque 3: tanque de nivel y estado (verde / amarillo / rojo) ---- */
+    .val { font-variant-numeric: tabular-nums; color: var(--water); font-weight: 700; }
+    .tank { display: flex; gap: 14px; align-items: flex-end; }
+    .gauge {
+      position: relative; width: 70px; height: 220px;
+      border: 2px solid var(--ink); border-top: 0;
+      background: rgba(0,0,0,.25); border-radius: 0 0 6px 6px;
+    }
+    .gauge .fill {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(180deg, var(--water), var(--water2));
+      opacity: .85; transition: height .3s;
+    }
+    .gauge .th { position: absolute; left: -6px; right: -6px; border-top: 2px dashed; }
+    .state { display: inline-block; padding: 4px 14px; border-radius: 20px; color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,.35); }
+    .s-v { background: var(--g); color: #052214; }
+    .s-a { background: var(--y); color: #222; }
+    .s-r { background: var(--r); }
 
-</style>
+    /* ---- Tablas (histórico y resultados) ---- */
+    table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+    th, td { border-bottom: 1px solid var(--line); padding: 5px 8px; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    .wrap { overflow-x: auto; }
 
-<!-- =====================================================================
-     NUEVO · ESTILOS DE LAS COLUMNAS DE AGUA LATERALES
-     Solo añade reglas nuevas (ids/clases #waterGL, .wside, .wfill, .wline,
-     .wl). No cambia ninguna regla del simulador.
-     ===================================================================== -->
-<style>
-:root{--wc:#3b9fc7}                      /* color del agua (el script lo cambia según el estado) */
+    /* ---- Bloque 4: tarjetas de canales de alerta ---- */
+    .ch {
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px; min-height: 92px;
+      background: rgba(0,0,0,.18); box-shadow: 0 4px 14px rgba(0,0,0,.25);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .ch b { display: block; }
+    .ch small { color: var(--mut); }
+    .on { border-color: var(--r); box-shadow: inset 4px 0 0 var(--r), 0 6px 20px rgba(238,106,92,.18); }
 
-/* Pone el contenido original POR ENCIMA del agua. position:relative no altera el diseño. */
-header,main{position:relative;z-index:1}
+    /* ---- Resultados de pruebas: cumple / no cumple y gráfico ---- */
+    .ok { color: var(--g); font-weight: 700; }
+    .no { color: var(--r); font-weight: 700; }
+    canvas {                                 /* aplica a los gráficos de las pruebas */
+      width: 100%; max-width: 520px; height: auto;
+      border: 1px solid var(--line); border-radius: 10px;
+      background: var(--card); box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    }
+    .note { color: var(--mut); font-size: 13px; }
 
-/* Lienzo WebGL a pantalla completa, detrás de todo. Oculto salvo en modo WebGL. */
-#waterGL{position:fixed;left:0;top:0;z-index:0;pointer-events:none;display:none}
-html.wgl #waterGL{display:block}
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
 
-/* Marco de cada columna (tanque de vidrio). Se ubica y dimensiona desde el script. */
-.wside{
-  position:fixed;top:24px;bottom:24px;z-index:1;pointer-events:none;
-  border:1px solid var(--line);border-radius:10px;overflow:hidden;
-  background:rgba(0,0,0,.28)
-}
-html.wgl .wside{background:none}         /* en modo WebGL el "vidrio" lo dibuja el shader */
+  <!-- ===================================================================
+       ESTILOS 2 · COLUMNAS DE AGUA LATERALES (decorativas)
+       =================================================================== -->
+  <style>
+    :root { --wc: #3b9fc7; }                 /* color del agua (el script lo cambia según el estado) */
 
-/* PLAN DE RESPALDO (CSS): relleno de agua con borde ondulado animado. */
-.wfill{
-  position:absolute;left:0;right:0;bottom:0;height:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.38)),var(--wc)
-}
-.wfill::before{                           /* cresta de olas que se desplaza */
-  content:"";position:absolute;left:-30px;right:-30px;top:-7px;height:8px;
-  background:radial-gradient(circle at 10px 8px,var(--wc) 8px,transparent 9px) 0 0/20px 8px repeat-x;
-  animation:wv 2.4s linear infinite
-}
-@keyframes wv{to{transform:translateX(20px)}}
-html.wgl .wfill{display:none}             /* en modo WebGL no se usa el relleno CSS */
+    /* Contenido original por encima del agua */
+    header, main { position: relative; z-index: 1; }
 
-/* Líneas de umbral (1.5 m = 37.5 % de 4 m; 2.8 m = 70 %) y etiquetas */
-.wline{position:absolute;left:0;right:0;border-top:2px dashed;opacity:.85}
-.wline.y{bottom:37.5%;color:var(--y)}.wline.r{bottom:70%;color:var(--r)}
-.wl{position:absolute;left:6px;font:600 11px/1 "Segoe UI",Roboto,Arial,sans-serif;text-shadow:0 1px 2px #000}
-.wl.y{bottom:calc(37.5% + 4px);color:var(--y)}
-.wl.r{bottom:calc(70% + 4px);color:var(--r)}
-.wl.t{top:6px;color:var(--mut)}
-.wside.narrow .wl{display:none}           /* columnas angostas (celular): sin etiquetas */
+    /* Lienzo WebGL a pantalla completa, detrás de todo.
+       CORRECCIÓN: se anulan las reglas de "canvas" del simulador (max-width, borde,
+       fondo y sombra) que lo aplastaban y descuadraban las columnas. */
+    #waterGL {
+      position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; display: none;
+      max-width: none; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+    }
+    html.wgl #waterGL { display: block; }
 
-@media (prefers-reduced-motion:reduce){.wfill::before{animation:none}}
-@media print{#waterGL,.wside{display:none!important}}
-</style>
+    /* Marco de cada columna (tanque de vidrio); el script lo ubica y dimensiona */
+    .wside {
+      position: fixed; top: 24px; bottom: 24px; z-index: 1; pointer-events: none;
+      border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+      background: rgba(0,0,0,.28);
+    }
+    html.wgl .wside { background: none; }    /* en modo WebGL el "vidrio" lo dibuja el shader */
+
+    /* Respaldo CSS: relleno de agua con cresta de olas animada */
+    .wfill {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.38)), var(--wc);
+    }
+    .wfill::before {
+      content: ""; position: absolute; left: -30px; right: -30px; top: -7px; height: 8px;
+      background: radial-gradient(circle at 10px 8px, var(--wc) 8px, transparent 9px) 0 0 / 20px 8px repeat-x;
+      animation: wv 2.4s linear infinite;
+    }
+    @keyframes wv { to { transform: translateX(20px); } }
+    html.wgl .wfill { display: none; }
+
+    /* Líneas de umbral (1.5 m = 37.5 % de 4 m · 2.8 m = 70 %) y etiquetas */
+    .wline { position: absolute; left: 0; right: 0; border-top: 2px dashed; opacity: .85; }
+    .wline.y { bottom: 37.5%; color: var(--y); }
+    .wline.r { bottom: 70%;   color: var(--r); }
+    .wl { position: absolute; left: 6px; font: 600 11px/1 "Segoe UI", Roboto, Arial, sans-serif; text-shadow: 0 1px 2px #000; }
+    .wl.y { bottom: calc(37.5% + 4px); color: var(--y); }
+    .wl.r { bottom: calc(70% + 4px);   color: var(--r); }
+    .wl.t { top: 6px; color: var(--mut); }
+    .wside.narrow .wl { display: none; }     /* columnas angostas (celular): sin etiquetas */
+
+    @media (prefers-reduced-motion: reduce) { .wfill::before { animation: none; } }
+    @media print { #waterGL, .wside { display: none !important; } }
+  </style>
 </head>
+
 <body>
 
-<!-- =====================================================================
-     ENCABEZADO (sin cambios)
-     ===================================================================== -->
-<header>
-<h1>Prototipo de bajo nivel · Sistema de alerta temprana por inundación</h1>
-<h1 style="text-align: center; color: #39FF14;">Estudiante · YAIR BERNARDO LEAL GUERRA - UNAD</h1>
-<p class="sub">Etapa 4 · Proyecto de Ingeniería I · Simulación digital de los 4 bloques de la Etapa 3 (umbrales unificados: 1.5 m y 2.8 m)</p>
-</header>
-<main>
+  <!-- ===================================================================
+       ENCABEZADO
+       =================================================================== -->
+  <header>
+    <h1>Prototipo de bajo nivel · Sistema de alerta temprana por inundación</h1>
+    <h1 style="text-align:center; color:#39FF14;">Estudiante · YAIR BERNARDO LEAL GUERRA - UNAD</h1>
+    <p class="sub">Etapa 4 · Proyecto de Ingeniería I · Simulación digital de los 4 bloques de la Etapa 3 (umbrales unificados: 1.5 m y 2.8 m)</p>
+  </header>
 
-<!-- ============ BLOQUES 1 y 3: captación y análisis de riesgo (sin cambios) ============ -->
-<div class="grid">
-<section aria-labelledby="b1">
-<h2 id="b1">Bloque 1 · Captación de datos</h2>
-<p class="note">Sensor ultrasónico simulado (tipo HC‑SR04) montado a 4.00 m sobre el fondo del cauce.</p>
-<label for="lvl">Nivel real del agua: <span class="val" id="lvlV">1.00</span> m</label>
-<input id="lvl" type="range" min="0" max="4" step="0.01" value="1">
-<label for="tmp">Temperatura del aire: <span class="val" id="tmpV">32</span> °C</label>
-<input id="tmp" type="range" min="15" max="40" step="1" value="32">
-<label for="sig">Ruido del sensor (σ): <span class="val" id="sigV">0.5</span> cm</label>
-<input id="sig" type="range" min="0" max="3" step="0.1" value="0.5">
-<label><input id="cmp" type="checkbox"> Compensar velocidad del sonido por temperatura</label>
-<button id="read">Tomar lectura</button>
-<button id="flood" class="alt">Simular crecida</button>
-<button id="reset" class="alt">Reiniciar</button>
-</section>
+  <main>
 
-<section aria-labelledby="b3">
-<h2 id="b3">Bloque 3 · Análisis de riesgo</h2>
-<div class="tank">
-<div class="gauge" aria-hidden="true"><div class="fill" id="fill"></div>
-<div class="th" style="bottom:37.5%;color:var(--y)"></div><div class="th" style="bottom:70%;color:var(--r)"></div></div>
-<div>
-<p>Nivel medido: <span class="val" id="meas">—</span> m</p>
-<p>Estado: <span class="state s-v" id="state">Sin lectura</span></p>
-<p class="note">Reglas: verde &lt; 1.5 m · amarillo 1.5–2.8 m · rojo ≥ 2.8 m. La alerta roja se emite al confirmar con 2 lecturas consecutivas (evita falsas alarmas).</p>
-</div></div>
-</section>
-</div>
+    <!-- ================================================================
+         BLOQUES 1 y 3 · Captación de datos y análisis de riesgo
+         ================================================================ -->
+    <div class="grid">
 
-<!-- ============ BLOQUE 2: histórico (sin cambios) ============ -->
-<section aria-labelledby="b2">
-<h2 id="b2">Bloque 2 · Procesamiento y almacenamiento (histórico)</h2>
-<div class="wrap"><table id="logT"><thead><tr><th>Hora</th><th>Nivel real (m)</th><th>Nivel medido (m)</th><th>Error (cm)</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
-<p class="note" id="logN">Aún no hay lecturas registradas.</p>
-</section>
+      <!-- Bloque 1: controles del sensor simulado -->
+      <section aria-labelledby="b1">
+        <h2 id="b1">Bloque 1 · Captación de datos</h2>
+        <p class="note">Sensor ultrasónico simulado (tipo HC‑SR04) montado a 4.00 m sobre el fondo del cauce.</p>
 
-<!-- ============ BLOQUE 4: notificación y respuesta (sin cambios) ============ -->
-<section aria-labelledby="b4">
-<h2 id="b4">Bloque 4 · Notificación y respuesta</h2>
-<div class="grid">
-<div class="ch" id="cSms"><b>SMS (teléfono básico)</b><small>Sin alerta activa</small></div>
-<div class="ch" id="cWeb"><b>Plataforma web</b><small>Sin alerta activa</small></div>
-<div class="ch" id="cWa"><b>WhatsApp / mensajería</b><small>Sin alerta activa</small></div>
-</div>
-</section>
+        <label for="lvl">Nivel real del agua: <span class="val" id="lvlV">1.00</span> m</label>
+        <input id="lvl" type="range" min="0" max="4" step="0.01" value="1">
 
-<!-- ============ PRUEBAS EXPERIMENTALES A y B (sin cambios) ============ -->
-<section aria-labelledby="pr">
-<h2 id="pr">Pruebas experimentales</h2>
-<p class="note">Usan los valores de temperatura, ruido y compensación fijados arriba. Cada ejecución genera datos nuevos (simulación estocástica).</p>
-<button id="tA">Prueba A · Exactitud y clasificación (30 muestras)</button>
-<button id="tB">Prueba B · Latencia de alertas (30 eventos)</button>
-<label for="intv" style="display:inline-block;margin-left:8px">Intervalo de muestreo:</label>
-<select id="intv"><option value="60">1 min</option><option value="300">5 min</option></select>
-<button id="csv" class="alt">Exportar todos los datos (CSV)</button>
-<div class="grid" style="margin-top:12px">
-<div><h2>Resultados</h2><div class="wrap"><table id="resT"><thead><tr><th>Indicador</th><th>Valor</th><th>Meta (KPI)</th><th>Cumple</th></tr></thead><tbody><tr><td colspan="4" class="note">Ejecuta una prueba.</td></tr></tbody></table></div></div>
-<div><h2 id="cvT">Gráfico de dispersión</h2><canvas id="cv" width="520" height="360" role="img" aria-label="Gráfico de dispersión de la prueba"></canvas></div>
-</div>
-<h2 style="margin-top:14px">Datos de la última prueba</h2>
-<div class="wrap" style="max-height:300px;overflow:auto"><table id="dT"></table></div>
-<p class="note">Metas tomadas de la Etapa 3 (error de medición ≤ 1 cm, SMS ≤ 10 s, extremo a extremo ≤ 180 s).</p>
-</section>
-</main>
+        <label for="tmp">Temperatura del aire: <span class="val" id="tmpV">32</span> °C</label>
+        <input id="tmp" type="range" min="15" max="40" step="1" value="32">
 
-<!-- =====================================================================
-     NUEVO · MARCADO DE LAS COLUMNAS DE AGUA
-     Es solo decoración/visualización: aria-hidden para lectores de pantalla.
-       #waterGL  -> lienzo donde el shader dibuja el agua (modo WebGL)
-       #wL / #wR -> marcos de las franjas izquierda y derecha
-         .wfill  -> agua de respaldo en CSS
-         .wline  -> líneas punteadas de umbral (1.5 m amarilla, 2.8 m roja)
-         .wl     -> etiquetas de texto
-     ===================================================================== -->
-<canvas id="waterGL" aria-hidden="true"></canvas>
-<div class="wside" id="wL" aria-hidden="true">
-  <i class="wfill"></i><i class="wline y"></i><i class="wline r"></i>
-  <b class="wl t">4.0 m · sensor</b><b class="wl y">1.5 m</b><b class="wl r">2.8 m</b>
-</div>
-<div class="wside" id="wR" aria-hidden="true">
-  <i class="wfill"></i><i class="wline y"></i><i class="wline r"></i>
-  <b class="wl t">4.0 m · sensor</b><b class="wl y">1.5 m</b><b class="wl r">2.8 m</b>
-</div>
+        <label for="sig">Ruido del sensor (σ): <span class="val" id="sigV">0.5</span> cm</label>
+        <input id="sig" type="range" min="0" max="3" step="0.1" value="0.5">
 
-<!-- =====================================================================
-     SCRIPT ORIGINAL DEL SIMULADOR (lógica idéntica, solo se añadieron
-     comentarios de orientación)
-     ===================================================================== -->
-<script>
-// ---------- Constantes y utilidades: altura del sensor, umbrales, ruido gaussiano, velocidad del sonido ----------
-const H=4,T1=1.5,T2=2.8,$=id=>document.getElementById(id);
-const D={live:[],A:[],B:[]};let last='';
-const randn=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
-const vs=T=>331.3+0.606*T;
-const cls=l=>l<T1?'Verde':l<T2?'Amarillo':'Rojo';
-const sc={Verde:'s-v',Amarillo:'s-a',Rojo:'s-r'};
-const f=(x,n=2)=>Number(x).toFixed(n);
-// ---------- Bloque 1: modelo del sensor (con o sin compensación por temperatura) ----------
-function measure(level,T,comp,sig){
-  const d=H-level,dm=d*(comp?vs(T):vs(20))/vs(T);
-  return H-dm+randn()*sig/100;
-}
-function params(){return{T:+$('tmp').value,comp:$('cmp').checked,sig:+$('sig').value}}
-['lvl','tmp','sig'].forEach(id=>$(id).addEventListener('input',()=>{$('lvlV').textContent=f($('lvl').value);$('tmpV').textContent=$('tmp').value;$('sigV').textContent=$('sig').value}));
-// ---------- Bloque 4: latencia simulada de cada canal (SMS, WhatsApp, web) ----------
-function chLat(ch){const p={sms:[4,.55,.03],wa:[2,.5,.02],web:[1,.4,.005]}[ch];let t=p[0]*Math.exp(p[1]*randn());while(Math.random()<p[2])t+=15;return t}
-let streak=0;
-// ---------- Bloques 2, 3 y 4: una lectura (histórico, estado y alertas) ----------
-function reading(){
-  const p=params(),real=+$('lvl').value,m=measure(real,p.T,p.comp,p.sig),st=cls(m);
-  D.live.push({hora:new Date().toLocaleTimeString(),real:f(real),medido:f(m,3),error_cm:f((m-real)*100,1),estado:st});
-  $('meas').textContent=f(m,3);$('state').textContent=st;$('state').className='state '+sc[st];
-  $('fill').style.height=Math.max(0,Math.min(100,m/H*100))+'%';
-  const tb=document.querySelector('#logT tbody');
-  tb.innerHTML=D.live.slice(-8).reverse().map(r=>`<tr><td>${r.hora}</td><td>${r.real}</td><td>${r.medido}</td><td>${r.error_cm}</td><td>${r.estado}</td></tr>`).join('');
-  $('logN').textContent=D.live.length+' lecturas almacenadas en el histórico.';
-  streak=st==='Rojo'?streak+1:0;
-  const web=st!=='Verde'||streak;
-  const show=(id,on,txt,lat)=>{$(id).className='ch'+(on?' on':'');$(id).querySelector('small').innerHTML=on?`${txt}<br>Latencia de entrega simulada: <b>${f(lat,1)} s</b>`:'Sin alerta activa'};
-  if(streak>=2){const msg='ALERTA ROJA: nivel '+f(m,2)+' m. Evacue a zona segura.';
-    show('cSms',1,msg,chLat('sms'));show('cWa',1,msg,chLat('wa'));show('cWeb',1,msg,chLat('web'))}
-  else if(st==='Amarillo'){show('cSms',0);show('cWa',0);show('cWeb',1,'Precaución: nivel '+f(m,2)+' m. Vigilancia reforzada.',chLat('web'))}
-  else if(st==='Rojo'){show('cSms',0);show('cWa',0);show('cWeb',1,'Nivel rojo detectado. Esperando confirmación (2.ª lectura).',chLat('web'))}
-  else{show('cSms',0);show('cWa',0);show('cWeb',0)}
-}
-// ---------- Botones: Tomar lectura, Simular crecida, Reiniciar ----------
-$('read').onclick=reading;
-let fl=null;
-$('flood').onclick=()=>{
-  if(fl){clearInterval(fl);fl=null;$('flood').textContent='Simular crecida';return}
-  $('flood').textContent='Detener crecida';
-  fl=setInterval(()=>{const v=Math.min(3.8,+$('lvl').value+0.08);$('lvl').value=v;$('lvlV').textContent=f(v);reading();if(v>=3.8){clearInterval(fl);fl=null;$('flood').textContent='Simular crecida'}},900)};
-$('reset').onclick=()=>{if(fl){clearInterval(fl);fl=null;$('flood').textContent='Simular crecida'}D.live=[];streak=0;$('lvl').value=1;$('lvlV').textContent='1.00';
-  $('meas').textContent='—';$('state').textContent='Sin lectura';$('state').className='state s-v';$('fill').style.height='0';
-  document.querySelector('#logT tbody').innerHTML='';$('logN').textContent='Aún no hay lecturas registradas.';
-  ['cSms','cWeb','cWa'].forEach(i=>{$(i).className='ch';$(i).querySelector('small').textContent='Sin alerta activa'})};
+        <label><input id="cmp" type="checkbox"> Compensar velocidad del sonido por temperatura</label>
 
-// ---------- Pruebas: tabla de resultados, tabla de datos y gráfico de dispersión ----------
-function res(rows){$('resT').querySelector('tbody').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="${r[3]?'ok':'no'}">${r[3]?'Sí':'No'}</td></tr>`).join('')}
-function table(cols,rows){$('dT').innerHTML='<thead><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${r[c]}</td>`).join('')+'</tr>').join('')+'</tbody>'}
-function scatter(pts,o){
-  const c=$('cv'),x=c.getContext('2d'),W=c.width,Hh=c.height,m=46,cs=getComputedStyle(document.documentElement);
-  const ink=cs.getPropertyValue('--ink').trim(),mut=cs.getPropertyValue('--mut').trim(),wat=cs.getPropertyValue('--water').trim(),red=cs.getPropertyValue('--r').trim(),yel=cs.getPropertyValue('--y').trim();
-  x.clearRect(0,0,W,Hh);x.font='12px sans-serif';x.fillStyle=ink;x.strokeStyle=mut;
-  const X=v=>m+v/o.xm*(W-m-12),Y=v=>Hh-m-v/o.ym*(Hh-m-12);
-  x.beginPath();x.moveTo(m,10);x.lineTo(m,Hh-m);x.lineTo(W-10,Hh-m);x.stroke();
-  for(let i=0;i<=4;i++){const vx=o.xm*i/4,vy=o.ym*i/4;x.fillText(f(vx,o.xm>10?0:1),X(vx)-8,Hh-m+16);x.fillText(f(vy,o.ym>10?0:1),6,Y(vy)+4)}
-  x.fillText(o.xl,W/2-40,Hh-8);x.save();x.translate(14,Hh/2+30);x.rotate(-Math.PI/2);x.fillText(o.yl,0,0);x.restore();
-  (o.lines||[]).forEach(l=>{x.strokeStyle=l.c==='r'?red:yel;x.setLineDash([6,4]);x.beginPath();x.moveTo(X(l.x1),Y(l.y1));x.lineTo(X(l.x2),Y(l.y2));x.stroke();x.setLineDash([])});
-  x.fillStyle=wat;pts.forEach(p=>{x.beginPath();x.arc(X(p[0]),Y(p[1]),4,0,7);x.fill()})}
+        <button id="read">Tomar lectura</button>
+        <button id="flood" class="alt">Simular crecida</button>
+        <button id="reset" class="alt">Reiniciar</button>
+      </section>
 
-// ---------- Prueba A: exactitud y clasificación (30 muestras) ----------
-$('tA').onclick=()=>{
-  const p=params(),rows=[];
-  for(let i=1;i<=30;i++){
-    let real=i%2?0.3+Math.random()*3.4:[T1,T2][Math.random()<.5?0:1]+(Math.random()-.5)*0.2;
-    real=Math.round(real*100)/100;
-    const m=measure(real,p.T,p.comp,p.sig),er=cls(real),em=cls(m);
-    rows.push({n:i,real_m:f(real),medido_m:f(m,3),error_cm:f((m-real)*100,1),estado_real:er,estado_medido:em,acierto:er===em?'Sí':'No'})}
-  D.A=rows;last='A';
-  const err=rows.map(r=>+r.error_cm),mae=err.reduce((a,b)=>a+Math.abs(b),0)/30,mx=Math.max(...err.map(Math.abs)),acc=rows.filter(r=>r.acierto==='Sí').length/30*100;
-  const fa=rows.filter(r=>r.estado_real!=='Rojo'&&r.estado_medido==='Rojo').length,om=rows.filter(r=>r.estado_real==='Rojo'&&r.estado_medido!=='Rojo').length;
-  const bias=err.reduce((a,b)=>a+b,0)/30;
-  res([['Error absoluto medio (MAE)',f(mae,2)+' cm','≤ 1.0 cm',mae<=1],['Error máximo',f(mx,1)+' cm','informativo',true],['Sesgo medio',f(bias,2)+' cm','≈ 0',Math.abs(bias)<=0.5],['Clasificación correcta',f(acc,1)+' %','≥ 95 %',acc>=95],['Falsas alarmas rojas',fa,'0',fa===0],['Alertas rojas omitidas',om,'0',om===0]]);
-  $('cvT').textContent='Prueba A: nivel real vs. medido';
-  scatter(rows.map(r=>[+r.real_m,+r.medido_m]),{xm:4,ym:4,xl:'Nivel real (m)',yl:'Nivel medido (m)',lines:[{c:'y',x1:0,y1:0,x2:4,y2:4},{c:'r',x1:T2,y1:0,x2:T2,y2:4}]});
-  table(Object.keys(rows[0]),rows)};
+      <!-- Bloque 3: nivel medido y estado (verde / amarillo / rojo) -->
+      <section aria-labelledby="b3">
+        <h2 id="b3">Bloque 3 · Análisis de riesgo</h2>
+        <div class="tank">
+          <div class="gauge" aria-hidden="true">
+            <div class="fill" id="fill"></div>
+            <div class="th" style="bottom:37.5%; color:var(--y);"></div>
+            <div class="th" style="bottom:70%;   color:var(--r);"></div>
+          </div>
+          <div>
+            <p>Nivel medido: <span class="val" id="meas">—</span> m</p>
+            <p>Estado: <span class="state s-v" id="state">Sin lectura</span></p>
+            <p class="note">Reglas: verde &lt; 1.5 m · amarillo 1.5–2.8 m · rojo ≥ 2.8 m. La alerta roja se emite al confirmar con 2 lecturas consecutivas (evita falsas alarmas).</p>
+          </div>
+        </div>
+      </section>
 
-// ---------- Prueba B: latencia de alertas (30 eventos) ----------
-$('tB').onclick=()=>{
-  const iv=+$('intv').value,rows=[];
-  for(let i=1;i<=30;i++){
-    const espera=Math.random()*iv,conf=iv,up=0.2+Math.random()*1.8,cloud=0.1+Math.random()*0.4,sms=chLat('sms'),wa=chLat('wa'),web=chLat('web');
-    rows.push({n:i,espera_muestreo_s:f(espera,1),confirmacion_s:f(conf,0),enlace_nube_s:f(up+cloud,1),sms_s:f(sms,1),whatsapp_s:f(wa,1),web_s:f(web,1),extremo_a_extremo_s:f(espera+conf+up+cloud+sms,1)})}
-  D.B=rows;last='B';
-  const s=rows.map(r=>+r.sms_s),e=rows.map(r=>+r.extremo_a_extremo_s),avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-  const p95=a=>[...a].sort((x,y)=>x-y)[Math.floor(a.length*.95)-1],okS=s.filter(v=>v<=10).length/30*100,okE=e.filter(v=>v<=180).length/30*100;
-  res([['SMS: latencia media',f(avg(s),1)+' s','≤ 10 s',avg(s)<=10],['SMS: percentil 95',f(p95(s),1)+' s','≤ 10 s',p95(s)<=10],['SMS entregados ≤ 10 s',f(okS,0)+' %','≥ 95 %',okS>=95],['Extremo a extremo (media)',f(avg(e),0)+' s','≤ 180 s',avg(e)<=180],['Extremo a extremo (máx.)',f(Math.max(...e),0)+' s','≤ 180 s',Math.max(...e)<=180],['Eventos dentro de 180 s',f(okE,0)+' %','100 %',okE===100]]);
-  $('cvT').textContent='Prueba B: latencia extremo a extremo';
-  scatter(rows.map(r=>[r.n,+r.extremo_a_extremo_s]),{xm:30,ym:Math.max(200,Math.ceil(Math.max(...e)/50)*50),xl:'N.º de evento',yl:'Latencia (s)',lines:[{c:'r',x1:0,y1:180,x2:30,y2:180}]});
-  table(Object.keys(rows[0]),rows)};
+    </div>
 
-// ---------- Exportar CSV ----------
-$('csv').onclick=()=>{
-  let o='';for(const k of ['live','A','B']){if(!D[k].length)continue;o+='# '+({live:'Histórico en vivo',A:'Prueba A exactitud',B:'Prueba B latencia'})[k]+'\n'+Object.keys(D[k][0]).join(',')+'\n'+D[k].map(r=>Object.values(r).join(',')).join('\n')+'\n\n'}
-  if(!o){alert('Aún no hay datos. Toma lecturas o ejecuta una prueba.');return}
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+o],{type:'text/csv'}));a.download='datos_prototipo.csv';a.click()};
-</script>
+    <!-- ================================================================
+         BLOQUE 2 · Procesamiento y almacenamiento (histórico)
+         ================================================================ -->
+    <section aria-labelledby="b2">
+      <h2 id="b2">Bloque 2 · Procesamiento y almacenamiento (histórico)</h2>
+      <div class="wrap">
+        <table id="logT">
+          <thead>
+            <tr><th>Hora</th><th>Nivel real (m)</th><th>Nivel medido (m)</th><th>Error (cm)</th><th>Estado</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="note" id="logN">Aún no hay lecturas registradas.</p>
+    </section>
 
-<!-- =====================================================================
-     NUEVO · SCRIPT DE LAS COLUMNAS DE AGUA
-     Va en un bloque de script aparte y envuelto en try/catch: si algo fallara aquí,
-     el simulador de arriba sigue funcionando igual.
-     NO escribe en ningún elemento del simulador: solo LEE #lvl, #state y
-     #flood para saber nivel, estado y si hay crecida en curso.
-     Modos:
-       · WebGL  -> escritorio ancho, sin "reducir movimiento", con GPU
-       · CSS    -> celulares/tablets, pantallas angostas, WebGL no disponible
-                   o usuario con "reducir movimiento" (columna delgada con
-                   relleno y olas CSS)
-     ===================================================================== -->
-<script>
-(function(){
-try{
-  const $=id=>document.getElementById(id);
-  const root=document.documentElement,cv=$('waterGL'),cols=[$('wL'),$('wR')],fills=cols.map(c=>c.querySelector('.wfill'));
+    <!-- ================================================================
+         BLOQUE 4 · Notificación y respuesta
+         ================================================================ -->
+    <section aria-labelledby="b4">
+      <h2 id="b4">Bloque 4 · Notificación y respuesta</h2>
+      <div class="grid">
+        <div class="ch" id="cSms"><b>SMS (teléfono básico)</b><small>Sin alerta activa</small></div>
+        <div class="ch" id="cWeb"><b>Plataforma web</b><small>Sin alerta activa</small></div>
+        <div class="ch" id="cWa"><b>WhatsApp / mensajería</b><small>Sin alerta activa</small></div>
+      </div>
+    </section>
 
-  /* ---- 1) Ajustes ---- */
-  const CONTENT_W=1100;                      // ancho máximo del contenido original (header/main)
-  const COLS={Verde:[.23,.62,.78],Amarillo:[.90,.68,.16],Rojo:[.88,.30,.25]};  // color del agua por estado (RGB 0–1)
-  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;          // accesibilidad
-  const touch=matchMedia('(pointer:coarse)').matches;                          // celular/tablet -> respaldo CSS
-  const cur={lvl:0,ag:.3,col:COLS.Verde.slice()};   // valores suavizados que se muestran
-  let gl=null,U={},mode='css',geo={c:[0,0,0,0],W:0,H:0,dpr:1};
+    <!-- ================================================================
+         PRUEBAS EXPERIMENTALES · A (exactitud) y B (latencia)
+         ================================================================ -->
+    <section aria-labelledby="pr">
+      <h2 id="pr">Pruebas experimentales</h2>
+      <p class="note">Usan los valores de temperatura, ruido y compensación fijados arriba. Cada ejecución genera datos nuevos (simulación estocástica).</p>
 
-  /* ---- 2) Shader (GLSL): dibuja el agua píxel por píxel en la GPU ---- */
-  const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
-  const FS=`
-  #ifdef GL_FRAGMENT_PRECISION_HIGH
-  precision highp float;
-  #else
-  precision mediump float;
-  #endif
-  uniform vec2 uSize;      // tamaño de la ventana en px CSS
-  uniform float uDpr,uT,uLvl,uAg;   // densidad de píxeles, tiempo, nivel (0–1), agitación (0–1)
-  uniform vec4 uC;         // x0,x1 columna izquierda · x0,x1 columna derecha
-  uniform vec3 uCol;       // color base según el estado
-  void main(){
-    vec2 p=gl_FragCoord.xy/uDpr;                 // posición en px CSS (y desde abajo)
-    float x0,x1;
-    if(p.x>=uC.x&&p.x<=uC.y){x0=uC.x;x1=uC.y;}  // ¿dentro de la columna izquierda?
-    else if(p.x>=uC.z&&p.x<=uC.w){x0=uC.z;x1=uC.w;} // ¿o de la derecha?
-    else discard;                                // fuera de las columnas: transparente
-    float bot=24.,hgt=uSize.y-48.,y=p.y-bot;     // el tanque ocupa de 24 px a H-24 px
-    vec2 c=vec2((x0+x1)*.5,uSize.y*.5),hb=vec2((x1-x0)*.5,hgt*.5);
-    float sd=length(max(abs(p-c)-hb+10.,0.))-10.;// caja con esquinas redondeadas (radio 10)
-    if(sd>0.5) discard;
-    float edge=clamp(.5-sd,0.,1.);
-    float surf=uLvl*hgt;                         // altura de la superficie (nivel 0–4 m)
-    float k=(p.x-x0)*.05;
-    float wave=(sin(k+uT*1.6)*3.+sin(k*2.3-uT*2.1)*1.8+sin(k*4.1+uT*3.3)*.9)*(.35+uAg*1.7); // oleaje: más fuerte en crecida
-    float d=surf+wave-y;                         // >0 = por debajo de la superficie
-    if(d<0.){gl_FragColor=vec4(0.,0.,0.,.28)*edge;return;}  // parte vacía: "vidrio" oscuro
-    float depth=smoothstep(0.,1.,clamp(d/(hgt*.7),0.,1.));  // 0 cerca de la superficie, 1 en el fondo
-    vec3 col=mix(uCol*1.25+.05,uCol*.30,depth);  // degradado claro -> oscuro
-    float cs=sin(p.x*.07+sin(p.y*.05+uT*.8)*2.+uT*.6)*sin(p.y*.09-uT*.7+sin(p.x*.05-uT*.5)*2.);
-    col+=.07*pow(max(cs,0.),2.)*(1.-depth);      // cáusticas (luz que baila bajo el agua)
-    float foam=1.-smoothstep(0.,6.,d);           // espuma en la superficie
-    col=mix(col,vec3(.92,.97,1.),foam*(.35+uAg*.4));
-    col+=pow(max(sin(p.x*.35+uT*2.5)*sin(p.x*.13-uT*1.7),0.),8.)*(1.-smoothstep(0.,12.,d))*.5; // destellos
-    col*=.78+.22*sin((p.x-x0)/(x1-x0)*3.14159);  // sombreado lateral (efecto tubo)
-    float al=.93*edge;
-    gl_FragColor=vec4(col*al,al);                // salida con alfa premultiplicado
-  }`;
+      <button id="tA">Prueba A · Exactitud y clasificación (30 muestras)</button>
+      <button id="tB">Prueba B · Latencia de alertas (30 eventos)</button>
+      <label for="intv" style="display:inline-block; margin-left:8px;">Intervalo de muestreo:</label>
+      <select id="intv">
+        <option value="60">1 min</option>
+        <option value="300">5 min</option>
+      </select>
+      <button id="csv" class="alt">Exportar todos los datos (CSV)</button>
 
-  /* ---- 3) Inicializa WebGL; si algo falla, gl queda en null y se usa el respaldo CSS ---- */
-  function initGL(){
-    try{
-      gl=cv.getContext('webgl',{alpha:true,premultipliedAlpha:true,antialias:false});
-      if(!gl)return;
-      const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o};
-      const pr=gl.createProgram();
-      gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));
-      gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error('link');
-      gl.useProgram(pr);
-      const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);
-      gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW); // rectángulo a pantalla completa
-      const a=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
-      ['uSize','uDpr','uT','uLvl','uAg','uC','uCol'].forEach(n=>U[n]=gl.getUniformLocation(pr,n));
-      cv.addEventListener('webglcontextlost',e=>{e.preventDefault();gl=null;layout()}); // si se pierde la GPU -> respaldo CSS
-    }catch(e){console.warn('Agua WebGL no disponible, se usa respaldo CSS',e);gl=null}
-  }
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <h2>Resultados</h2>
+          <div class="wrap">
+            <table id="resT">
+              <thead><tr><th>Indicador</th><th>Valor</th><th>Meta (KPI)</th><th>Cumple</th></tr></thead>
+              <tbody><tr><td colspan="4" class="note">Ejecuta una prueba.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h2 id="cvT">Gráfico de dispersión</h2>
+          <canvas id="cv" width="520" height="360" role="img" aria-label="Gráfico de dispersión de la prueba"></canvas>
+        </div>
+      </div>
 
-  /* ---- 4) Geometría: calcula dónde van las columnas y elige el modo ---- */
-  function layout(){
-    const W=root.clientWidth,H=window.innerHeight,strip=Math.max(0,(W-CONTENT_W)/2); // ancho libre a cada lado
-    const wide=strip>=56,w=wide?Math.min(220,strip-24):10,x=wide?(strip-w)/2:5;       // franja ancha o delgada (celular)
-    geo.c=[x,x+w,W-x-w,W-x];geo.W=W;geo.H=H;geo.dpr=Math.min(window.devicePixelRatio||1,1.5);
-    cols[0].style.cssText='left:'+x+'px;width:'+w+'px';
-    cols[1].style.cssText='left:'+(W-x-w)+'px;width:'+w+'px';
-    cols.forEach(c=>c.classList.toggle('narrow',w<60));
-    const useGL=!!gl&&wide&&w>=60&&!reduce&&!touch;
-    mode=useGL?'gl':'css';root.classList.toggle('wgl',useGL);
-    if(useGL){cv.width=W*geo.dpr|0;cv.height=H*geo.dpr|0;cv.style.width=W+'px';cv.style.height=H+'px';gl.viewport(0,0,cv.width,cv.height)}
-  }
+      <h2 style="margin-top:14px;">Datos de la última prueba</h2>
+      <div class="wrap" style="max-height:300px; overflow:auto;"><table id="dT"></table></div>
+      <p class="note">Metas tomadas de la Etapa 3 (error de medición ≤ 1 cm, SMS ≤ 10 s, extremo a extremo ≤ 180 s).</p>
+    </section>
 
-  /* ---- 5) Lee el estado del simulador (solo lectura del DOM) ---- */
-  function readSim(){
-    const lv=parseFloat($('lvl').value)||0,st=$('state').textContent.trim(),flood=$('flood').textContent.indexOf('Detener')>-1;
-    const key=COLS[st]?st:'Verde';               // "Sin lectura" se muestra como Verde
-    return{lvl:Math.max(0,Math.min(1,lv/4)),col:COLS[key],ag:(flood?1:.3)+(key==='Rojo'?.25:0)}; // nivel 0–1, color, agitación
-  }
+  </main>
 
-  /* ---- 6) Dibujo ---- */
-  function draw(t){                              // modo WebGL: envía valores al shader y dibuja
-    gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform2f(U.uSize,geo.W,geo.H);gl.uniform1f(U.uDpr,geo.dpr);gl.uniform4f(U.uC,geo.c[0],geo.c[1],geo.c[2],geo.c[3]);
-    gl.uniform1f(U.uT,(t/1000)%7200);gl.uniform1f(U.uLvl,cur.lvl);gl.uniform1f(U.uAg,cur.ag);gl.uniform3f(U.uCol,cur.col[0],cur.col[1],cur.col[2]);
-    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-  }
-  function paintCss(){                           // modo respaldo: altura y color del relleno CSS
-    fills.forEach(f=>f.style.height=(cur.lvl*100).toFixed(2)+'%');
-    root.style.setProperty('--wc','rgb('+cur.col.map(v=>Math.round(v*255))+')');
-  }
+  <!-- ===================================================================
+       MARCADO DE LAS COLUMNAS DE AGUA (solo decoración, aria-hidden)
+         #waterGL → lienzo del shader (modo WebGL)
+         #wL / #wR → marcos izquierdo y derecho
+       =================================================================== -->
+  <canvas id="waterGL" aria-hidden="true"></canvas>
 
-  /* ---- 7) Bucle: suaviza los valores (sube/baja con fluidez) y dibuja ---- */
-  function frame(t){
-    const s=readSim();
-    cur.lvl+=(s.lvl-cur.lvl)*.06;cur.ag+=(s.ag-cur.ag)*.04;
-    for(let i=0;i<3;i++)cur.col[i]+=(s.col[i]-cur.col[i])*.05;
-    if(mode==='gl')draw(t);else paintCss();
-    requestAnimationFrame(frame);                // el navegador lo pausa solo si la pestaña está oculta
-  }
+  <div class="wside" id="wL" aria-hidden="true">
+    <i class="wfill"></i><i class="wline y"></i><i class="wline r"></i>
+    <b class="wl t">4.0 m · sensor</b><b class="wl y">1.5 m</b><b class="wl r">2.8 m</b>
+  </div>
+  <div class="wside" id="wR" aria-hidden="true">
+    <i class="wfill"></i><i class="wline y"></i><i class="wline r"></i>
+    <b class="wl t">4.0 m · sensor</b><b class="wl y">1.5 m</b><b class="wl r">2.8 m</b>
+  </div>
 
-  initGL();layout();
-  let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layout,120)});
-  requestAnimationFrame(frame);
-}catch(e){console.warn('Columnas de agua desactivadas:',e)}
-})();
-</script>
+  <!-- ===================================================================
+       SCRIPT 1 · LÓGICA DEL SIMULADOR
+       =================================================================== -->
+  <script>
+    /* ---------- 1. Constantes, datos y utilidades ---------- */
+    const H = 4, T1 = 1.5, T2 = 2.8;                 // altura del sensor y umbrales (m)
+    const $ = id => document.getElementById(id);
+    const D = { live: [], A: [], B: [] };            // datos guardados para el CSV
+
+    const randn = () => {                            // ruido gaussiano (Box-Muller)
+      let u = 0, v = 0;
+      while (!u) u = Math.random();
+      while (!v) v = Math.random();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    };
+    const vs  = T => 331.3 + 0.606 * T;              // velocidad del sonido (m/s) a T °C
+    const cls = l => l < T1 ? 'Verde' : l < T2 ? 'Amarillo' : 'Rojo';
+    const sc  = { Verde: 's-v', Amarillo: 's-a', Rojo: 's-r' };
+    const f   = (x, n = 2) => Number(x).toFixed(n);
+
+    /* ---------- 2. Bloque 1: modelo del sensor ---------- */
+    // Sin compensar, el sensor asume la velocidad del sonido a 20 °C.
+    function measure(level, T, comp, sig) {
+      const d  = H - level;
+      const dm = d * (comp ? vs(T) : vs(20)) / vs(T);
+      return H - dm + randn() * sig / 100;
+    }
+    function params() {
+      return { T: +$('tmp').value, comp: $('cmp').checked, sig: +$('sig').value };
+    }
+    ['lvl', 'tmp', 'sig'].forEach(id => $(id).addEventListener('input', () => {
+      $('lvlV').textContent = f($('lvl').value);
+      $('tmpV').textContent = $('tmp').value;
+      $('sigV').textContent = $('sig').value;
+    }));
+
+    /* ---------- 3. Bloque 4: latencia simulada por canal ---------- */
+    // p = [mediana (s), dispersión, probabilidad de pérdida]; cada pérdida suma un reintento de 15 s
+    function chLat(ch) {
+      const p = { sms: [4, .55, .03], wa: [2, .5, .02], web: [1, .4, .005] }[ch];
+      let t = p[0] * Math.exp(p[1] * randn());
+      while (Math.random() < p[2]) t += 15;
+      return t;
+    }
+
+    /* ---------- 4. Bloques 2, 3 y 4: una lectura completa ---------- */
+    let streak = 0;                                  // lecturas rojas consecutivas
+    function reading() {
+      const p = params(), real = +$('lvl').value;
+      const m = measure(real, p.T, p.comp, p.sig), st = cls(m);
+
+      // Bloque 2: histórico
+      D.live.push({ hora: new Date().toLocaleTimeString(), real: f(real), medido: f(m, 3), error_cm: f((m - real) * 100, 1), estado: st });
+      document.querySelector('#logT tbody').innerHTML = D.live.slice(-8).reverse().map(r =>
+        `<tr><td>${r.hora}</td><td>${r.real}</td><td>${r.medido}</td><td>${r.error_cm}</td><td>${r.estado}</td></tr>`).join('');
+      $('logN').textContent = D.live.length + ' lecturas almacenadas en el histórico.';
+
+      // Bloque 3: nivel y estado
+      $('meas').textContent  = f(m, 3);
+      $('state').textContent = st;
+      $('state').className   = 'state ' + sc[st];
+      $('fill').style.height = Math.max(0, Math.min(100, m / H * 100)) + '%';
+      streak = st === 'Rojo' ? streak + 1 : 0;
+
+      // Bloque 4: alertas por canal
+      const show = (id, on, txt, lat) => {
+        $(id).className = 'ch' + (on ? ' on' : '');
+        $(id).querySelector('small').innerHTML = on
+          ? `${txt}<br>Latencia de entrega simulada: <b>${f(lat, 1)} s</b>`
+          : 'Sin alerta activa';
+      };
+      if (streak >= 2) {                             // rojo confirmado: los 3 canales
+        const msg = 'ALERTA ROJA: nivel ' + f(m, 2) + ' m. Evacue a zona segura.';
+        show('cSms', 1, msg, chLat('sms'));
+        show('cWa',  1, msg, chLat('wa'));
+        show('cWeb', 1, msg, chLat('web'));
+      } else if (st === 'Amarillo') {                // precaución: solo web
+        show('cSms', 0);
+        show('cWa', 0);
+        show('cWeb', 1, 'Precaución: nivel ' + f(m, 2) + ' m. Vigilancia reforzada.', chLat('web'));
+      } else if (st === 'Rojo') {                    // primera lectura roja: espera confirmación
+        show('cSms', 0);
+        show('cWa', 0);
+        show('cWeb', 1, 'Nivel rojo detectado. Esperando confirmación (2.ª lectura).', chLat('web'));
+      } else {                                       // verde: sin alertas
+        show('cSms', 0);
+        show('cWa', 0);
+        show('cWeb', 0);
+      }
+    }
+
+    /* ---------- 5. Botones: Tomar lectura, Simular crecida, Reiniciar ---------- */
+    $('read').onclick = reading;
+
+    let fl = null;                                   // temporizador de la crecida
+    $('flood').onclick = () => {
+      if (fl) {                                      // detener crecida
+        clearInterval(fl); fl = null;
+        $('flood').textContent = 'Simular crecida';
+        return;
+      }
+      $('flood').textContent = 'Detener crecida';
+      fl = setInterval(() => {
+        const v = Math.min(3.8, +$('lvl').value + 0.08);
+        $('lvl').value = v;
+        $('lvlV').textContent = f(v);
+        reading();
+        if (v >= 3.8) {
+          clearInterval(fl); fl = null;
+          $('flood').textContent = 'Simular crecida';
+        }
+      }, 900);
+    };
+
+    $('reset').onclick = () => {
+      if (fl) { clearInterval(fl); fl = null; $('flood').textContent = 'Simular crecida'; }
+      D.live = []; streak = 0;
+      $('lvl').value = 1; $('lvlV').textContent = '1.00';
+      $('meas').textContent = '—';
+      $('state').textContent = 'Sin lectura'; $('state').className = 'state s-v';
+      $('fill').style.height = '0';
+      document.querySelector('#logT tbody').innerHTML = '';
+      $('logN').textContent = 'Aún no hay lecturas registradas.';
+      ['cSms', 'cWeb', 'cWa'].forEach(i => {
+        $(i).className = 'ch';
+        $(i).querySelector('small').textContent = 'Sin alerta activa';
+      });
+    };
+
+    /* ---------- 6. Pruebas: tabla de resultados, tabla de datos y gráfico ---------- */
+    function res(rows) {                             // tabla "Resultados"
+      $('resT').querySelector('tbody').innerHTML = rows.map(r =>
+        `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="${r[3] ? 'ok' : 'no'}">${r[3] ? 'Sí' : 'No'}</td></tr>`).join('');
+    }
+    function table(cols, rows) {                     // tabla "Datos de la última prueba"
+      $('dT').innerHTML =
+        '<thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>' +
+        rows.map(r => '<tr>' + cols.map(c => `<td>${r[c]}</td>`).join('') + '</tr>').join('') + '</tbody>';
+    }
+    function scatter(pts, o) {                       // gráfico de dispersión en canvas
+      const c = $('cv'), x = c.getContext('2d'), W = c.width, Hh = c.height, m = 46;
+      const cs  = getComputedStyle(document.documentElement);
+      const ink = cs.getPropertyValue('--ink').trim(),   mut = cs.getPropertyValue('--mut').trim();
+      const wat = cs.getPropertyValue('--water').trim(), red = cs.getPropertyValue('--r').trim();
+      const yel = cs.getPropertyValue('--y').trim();
+      const X = v => m + v / o.xm * (W - m - 12);
+      const Y = v => Hh - m - v / o.ym * (Hh - m - 12);
+
+      x.clearRect(0, 0, W, Hh);
+      x.font = '12px sans-serif'; x.fillStyle = ink; x.strokeStyle = mut;
+
+      // ejes y marcas
+      x.beginPath(); x.moveTo(m, 10); x.lineTo(m, Hh - m); x.lineTo(W - 10, Hh - m); x.stroke();
+      for (let i = 0; i <= 4; i++) {
+        const vx = o.xm * i / 4, vy = o.ym * i / 4;
+        x.fillText(f(vx, o.xm > 10 ? 0 : 1), X(vx) - 8, Hh - m + 16);
+        x.fillText(f(vy, o.ym > 10 ? 0 : 1), 6, Y(vy) + 4);
+      }
+      x.fillText(o.xl, W / 2 - 40, Hh - 8);
+      x.save(); x.translate(14, Hh / 2 + 30); x.rotate(-Math.PI / 2); x.fillText(o.yl, 0, 0); x.restore();
+
+      // líneas de referencia (diagonal ideal, umbral, meta)
+      (o.lines || []).forEach(l => {
+        x.strokeStyle = l.c === 'r' ? red : yel;
+        x.setLineDash([6, 4]);
+        x.beginPath(); x.moveTo(X(l.x1), Y(l.y1)); x.lineTo(X(l.x2), Y(l.y2)); x.stroke();
+        x.setLineDash([]);
+      });
+
+      // puntos
+      x.fillStyle = wat;
+      pts.forEach(p => { x.beginPath(); x.arc(X(p[0]), Y(p[1]), 4, 0, 7); x.fill(); });
+    }
+
+    /* ---------- 7. Prueba A: exactitud y clasificación (30 muestras) ---------- */
+    $('tA').onclick = () => {
+      const p = params(), rows = [];
+      for (let i = 1; i <= 30; i++) {
+        // mitad de las muestras al azar y mitad cerca de los umbrales
+        let real = i % 2 ? 0.3 + Math.random() * 3.4 : [T1, T2][Math.random() < .5 ? 0 : 1] + (Math.random() - .5) * 0.2;
+        real = Math.round(real * 100) / 100;
+        const m = measure(real, p.T, p.comp, p.sig), er = cls(real), em = cls(m);
+        rows.push({ n: i, real_m: f(real), medido_m: f(m, 3), error_cm: f((m - real) * 100, 1), estado_real: er, estado_medido: em, acierto: er === em ? 'Sí' : 'No' });
+      }
+      D.A = rows;
+
+      const err  = rows.map(r => +r.error_cm);
+      const mae  = err.reduce((a, b) => a + Math.abs(b), 0) / 30;
+      const mx   = Math.max(...err.map(Math.abs));
+      const bias = err.reduce((a, b) => a + b, 0) / 30;
+      const acc  = rows.filter(r => r.acierto === 'Sí').length / 30 * 100;
+      const fa   = rows.filter(r => r.estado_real !== 'Rojo' && r.estado_medido === 'Rojo').length;   // falsas alarmas
+      const om   = rows.filter(r => r.estado_real === 'Rojo' && r.estado_medido !== 'Rojo').length;   // omisiones
+
+      res([
+        ['Error absoluto medio (MAE)', f(mae, 2) + ' cm', '≤ 1.0 cm', mae <= 1],
+        ['Error máximo',               f(mx, 1) + ' cm',  'informativo', true],
+        ['Sesgo medio',                f(bias, 2) + ' cm', '≈ 0', Math.abs(bias) <= 0.5],
+        ['Clasificación correcta',     f(acc, 1) + ' %',  '≥ 95 %', acc >= 95],
+        ['Falsas alarmas rojas',       fa, '0', fa === 0],
+        ['Alertas rojas omitidas',     om, '0', om === 0]
+      ]);
+      $('cvT').textContent = 'Prueba A: nivel real vs. medido';
+      scatter(rows.map(r => [+r.real_m, +r.medido_m]), {
+        xm: 4, ym: 4, xl: 'Nivel real (m)', yl: 'Nivel medido (m)',
+        lines: [{ c: 'y', x1: 0, y1: 0, x2: 4, y2: 4 }, { c: 'r', x1: T2, y1: 0, x2: T2, y2: 4 }]
+      });
+      table(Object.keys(rows[0]), rows);
+    };
+
+    /* ---------- 8. Prueba B: latencia de alertas (30 eventos) ---------- */
+    $('tB').onclick = () => {
+      const iv = +$('intv').value, rows = [];
+      for (let i = 1; i <= 30; i++) {
+        const espera = Math.random() * iv;            // espera hasta la siguiente lectura
+        const conf   = iv;                            // segunda lectura de confirmación
+        const up     = 0.2 + Math.random() * 1.8;     // enlace del sensor
+        const cloud  = 0.1 + Math.random() * 0.4;     // procesamiento en la nube
+        const sms = chLat('sms'), wa = chLat('wa'), web = chLat('web');
+        rows.push({
+          n: i, espera_muestreo_s: f(espera, 1), confirmacion_s: f(conf, 0), enlace_nube_s: f(up + cloud, 1),
+          sms_s: f(sms, 1), whatsapp_s: f(wa, 1), web_s: f(web, 1),
+          extremo_a_extremo_s: f(espera + conf + up + cloud + sms, 1)
+        });
+      }
+      D.B = rows;
+
+      const s = rows.map(r => +r.sms_s), e = rows.map(r => +r.extremo_a_extremo_s);
+      const avg = a => a.reduce((x, y) => x + y, 0) / a.length;
+      const p95 = a => [...a].sort((x, y) => x - y)[Math.floor(a.length * .95) - 1];
+      const okS = s.filter(v => v <= 10).length / 30 * 100;
+      const okE = e.filter(v => v <= 180).length / 30 * 100;
+
+      res([
+        ['SMS: latencia media',        f(avg(s), 1) + ' s', '≤ 10 s',  avg(s) <= 10],
+        ['SMS: percentil 95',          f(p95(s), 1) + ' s', '≤ 10 s',  p95(s) <= 10],
+        ['SMS entregados ≤ 10 s',      f(okS, 0) + ' %',    '≥ 95 %',  okS >= 95],
+        ['Extremo a extremo (media)',  f(avg(e), 0) + ' s', '≤ 180 s', avg(e) <= 180],
+        ['Extremo a extremo (máx.)',   f(Math.max(...e), 0) + ' s', '≤ 180 s', Math.max(...e) <= 180],
+        ['Eventos dentro de 180 s',    f(okE, 0) + ' %',    '100 %',   okE === 100]
+      ]);
+      $('cvT').textContent = 'Prueba B: latencia extremo a extremo';
+      scatter(rows.map(r => [r.n, +r.extremo_a_extremo_s]), {
+        xm: 30, ym: Math.max(200, Math.ceil(Math.max(...e) / 50) * 50),
+        xl: 'N.º de evento', yl: 'Latencia (s)',
+        lines: [{ c: 'r', x1: 0, y1: 180, x2: 30, y2: 180 }]
+      });
+      table(Object.keys(rows[0]), rows);
+    };
+
+    /* ---------- 9. Exportar CSV ---------- */
+    $('csv').onclick = () => {
+      const names = { live: 'Histórico en vivo', A: 'Prueba A exactitud', B: 'Prueba B latencia' };
+      let o = '';
+      for (const k of ['live', 'A', 'B']) {
+        if (!D[k].length) continue;
+        o += '# ' + names[k] + '\n' + Object.keys(D[k][0]).join(',') + '\n' +
+             D[k].map(r => Object.values(r).join(',')).join('\n') + '\n\n';
+      }
+      if (!o) { alert('Aún no hay datos. Toma lecturas o ejecuta una prueba.'); return; }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['\ufeff' + o], { type: 'text/csv' }));
+      a.download = 'datos_prototipo.csv';
+      a.click();
+    };
+  </script>
+
+  <!-- ===================================================================
+       SCRIPT 2 · COLUMNAS DE AGUA (decoración)
+       Solo LEE #lvl, #state y #flood; no modifica ninguna medición.
+       Modo WebGL en escritorio ancho; respaldo CSS en celular, pantalla
+       angosta, sin GPU o con "reducir movimiento".
+       =================================================================== -->
+  <script>
+    (function () {
+      try {
+        const $ = id => document.getElementById(id);
+        const root = document.documentElement, cv = $('waterGL');
+        const cols  = [$('wL'), $('wR')];
+        const fills = cols.map(c => c.querySelector('.wfill'));
+
+        /* ---- 1. Ajustes ---- */
+        const CONTENT_W = 1100;                                                     // ancho del contenido original
+        const COLS = { Verde: [.23, .62, .78], Amarillo: [.90, .68, .16], Rojo: [.88, .30, .25] }; // color del agua por estado
+        const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+        const touch  = matchMedia('(pointer:coarse)').matches;
+        const cur = { lvl: 0, ag: .3, col: COLS.Verde.slice() };                    // valores suavizados
+        let gl = null, U = {}, mode = 'css', geo = { c: [0, 0, 0, 0], W: 0, H: 0, dpr: 1 };
+
+        /* ---- 2. Shader (GLSL): dibuja el agua en la GPU ---- */
+        const VS = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+        const FS = `
+          #ifdef GL_FRAGMENT_PRECISION_HIGH
+          precision highp float;
+          #else
+          precision mediump float;
+          #endif
+          uniform vec2 uSize;               // tamaño de la ventana (px CSS)
+          uniform float uDpr, uT, uLvl, uAg; // densidad, tiempo, nivel 0–1, agitación 0–1
+          uniform vec4 uC;                  // x0,x1 columna izquierda · x0,x1 columna derecha
+          uniform vec3 uCol;                // color base según el estado
+          void main(){
+            vec2 p = gl_FragCoord.xy / uDpr;
+            float x0, x1;
+            if (p.x >= uC.x && p.x <= uC.y)      { x0 = uC.x; x1 = uC.y; }
+            else if (p.x >= uC.z && p.x <= uC.w) { x0 = uC.z; x1 = uC.w; }
+            else discard;
+            float bot = 24., hgt = uSize.y - 48., y = p.y - bot;
+            vec2 c = vec2((x0 + x1) * .5, uSize.y * .5), hb = vec2((x1 - x0) * .5, hgt * .5);
+            float sd = length(max(abs(p - c) - hb + 10., 0.)) - 10.;   // caja con esquinas redondeadas
+            if (sd > 0.5) discard;
+            float edge = clamp(.5 - sd, 0., 1.);
+            float surf = uLvl * hgt;
+            float k = (p.x - x0) * .05;
+            float wave = (sin(k + uT*1.6)*3. + sin(k*2.3 - uT*2.1)*1.8 + sin(k*4.1 + uT*3.3)*.9) * (.35 + uAg*1.7);
+            float d = surf + wave - y;                                 // >0 = bajo la superficie
+            if (d < 0.) { gl_FragColor = vec4(0., 0., 0., .28) * edge; return; }
+            float depth = smoothstep(0., 1., clamp(d / (hgt*.7), 0., 1.));
+            vec3 col = mix(uCol*1.25 + .05, uCol*.30, depth);          // degradado claro → oscuro
+            float cs = sin(p.x*.07 + sin(p.y*.05 + uT*.8)*2. + uT*.6) * sin(p.y*.09 - uT*.7 + sin(p.x*.05 - uT*.5)*2.);
+            col += .07 * pow(max(cs, 0.), 2.) * (1. - depth);          // cáusticas
+            float foam = 1. - smoothstep(0., 6., d);
+            col = mix(col, vec3(.92, .97, 1.), foam * (.35 + uAg*.4)); // espuma
+            col += pow(max(sin(p.x*.35 + uT*2.5) * sin(p.x*.13 - uT*1.7), 0.), 8.) * (1. - smoothstep(0., 12., d)) * .5;
+            col *= .78 + .22 * sin((p.x - x0) / (x1 - x0) * 3.14159);  // efecto tubo
+            float al = .93 * edge;
+            gl_FragColor = vec4(col * al, al);
+          }`;
+
+        /* ---- 3. Inicialización de WebGL (si falla, queda el respaldo CSS) ---- */
+        function initGL() {
+          try {
+            gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
+            if (!gl) return;
+            const sh = (t, s) => {
+              const o = gl.createShader(t);
+              gl.shaderSource(o, s); gl.compileShader(o);
+              if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o));
+              return o;
+            };
+            const pr = gl.createProgram();
+            gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS));
+            gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+            gl.linkProgram(pr);
+            if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error('link');
+            gl.useProgram(pr);
+
+            const b = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, b);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+            const a = gl.getAttribLocation(pr, 'a');
+            gl.enableVertexAttribArray(a);
+            gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+
+            ['uSize', 'uDpr', 'uT', 'uLvl', 'uAg', 'uC', 'uCol'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+            cv.addEventListener('webglcontextlost', e => { e.preventDefault(); gl = null; layout(); });
+          } catch (e) {
+            console.warn('Agua WebGL no disponible, se usa respaldo CSS', e);
+            gl = null;
+          }
+        }
+
+        /* ---- 4. Geometría: ubica las columnas y elige el modo ---- */
+        function layout() {
+          const W = root.clientWidth, H = window.innerHeight;
+          const strip = Math.max(0, (W - CONTENT_W) / 2);                 // ancho libre a cada lado
+          const wide  = strip >= 56;
+          const w = wide ? Math.min(220, strip - 24) : 10;
+          const x = wide ? (strip - w) / 2 : 5;
+          geo.c = [x, x + w, W - x - w, W - x];
+          geo.W = W; geo.H = H; geo.dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+
+          cols[0].style.cssText = 'left:' + x + 'px;width:' + w + 'px';
+          cols[1].style.cssText = 'left:' + (W - x - w) + 'px;width:' + w + 'px';
+          cols.forEach(c => c.classList.toggle('narrow', w < 60));
+
+          const useGL = !!gl && wide && w >= 60 && !reduce && !touch;
+          mode = useGL ? 'gl' : 'css';
+          root.classList.toggle('wgl', useGL);
+          if (useGL) {
+            cv.width  = W * geo.dpr | 0;  cv.height = H * geo.dpr | 0;
+            cv.style.width = W + 'px';    cv.style.height = H + 'px';
+            gl.viewport(0, 0, cv.width, cv.height);
+          }
+        }
+
+        /* ---- 5. Lectura del estado del simulador (solo lectura del DOM) ---- */
+        function readSim() {
+          const lv = parseFloat($('lvl').value) || 0;
+          const st = $('state').textContent.trim();
+          const flood = $('flood').textContent.indexOf('Detener') > -1;
+          const key = COLS[st] ? st : 'Verde';                            // "Sin lectura" se ve como Verde
+          return {
+            lvl: Math.max(0, Math.min(1, lv / 4)),
+            col: COLS[key],
+            ag: (flood ? 1 : .3) + (key === 'Rojo' ? .25 : 0)
+          };
+        }
+
+        /* ---- 6. Dibujo ---- */
+        function draw(t) {                                                // modo WebGL
+          gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.uniform2f(U.uSize, geo.W, geo.H);
+          gl.uniform1f(U.uDpr, geo.dpr);
+          gl.uniform4f(U.uC, geo.c[0], geo.c[1], geo.c[2], geo.c[3]);
+          gl.uniform1f(U.uT, (t / 1000) % 7200);
+          gl.uniform1f(U.uLvl, cur.lvl);
+          gl.uniform1f(U.uAg, cur.ag);
+          gl.uniform3f(U.uCol, cur.col[0], cur.col[1], cur.col[2]);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+        function paintCss() {                                             // modo respaldo CSS
+          fills.forEach(f => f.style.height = (cur.lvl * 100).toFixed(2) + '%');
+          root.style.setProperty('--wc', 'rgb(' + cur.col.map(v => Math.round(v * 255)) + ')');
+        }
+
+        /* ---- 7. Bucle de animación (suaviza nivel, agitación y color) ---- */
+        function frame(t) {
+          const s = readSim();
+          cur.lvl += (s.lvl - cur.lvl) * .06;
+          cur.ag  += (s.ag  - cur.ag)  * .04;
+          for (let i = 0; i < 3; i++) cur.col[i] += (s.col[i] - cur.col[i]) * .05;
+          if (mode === 'gl') draw(t); else paintCss();
+          requestAnimationFrame(frame);
+        }
+
+        /* ---- 8. Arranque ---- */
+        initGL();
+        layout();
+        let rz;
+        window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 120); });
+        requestAnimationFrame(frame);
+
+      } catch (e) {
+        console.warn('Columnas de agua desactivadas:', e);
+      }
+    })();
+  </script>
+
 </body>
 </html>
