@@ -97,7 +97,20 @@ canvas{width:100%;max-width:520px;height:auto;border:1px solid var(--line);borde
 .note{color:var(--mut);font-size:13px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-
+@media (max-width: 520px) {
+  .unad-logo-link {
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  .unad-logo-img {
+    height: 30px;
+  }
+  .unad-logo-text {
+    font-size: 12px;
+    white-space: normal;
+    text-align: left;
+  }
+}
 /* =====================================================================
    ESTILOS PARA EL CONTENEDOR Y LOGO UNAD (RESPONSIVE)
    ===================================================================== */
@@ -181,10 +194,8 @@ html.wgl .wfill{display:none}             /* en modo WebGL no se usa el relleno 
 </head>
 <body>
 
-<!-- =====================================================================
-     ENCABEZADO (sin cambios)
-     ===================================================================== -->
-<!-- =====================================================================
+
+<<!-- =====================================================================
      ENCABEZADO CON LOGO DE LA UNAD RESPONSIVE (SOLO ENLACES, SIN DESCARGAS)
      ===================================================================== -->
 <header>
