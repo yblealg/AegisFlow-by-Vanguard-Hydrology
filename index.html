@@ -146,6 +146,27 @@ html.wgl .wfill{display:none}             /* en modo WebGL no se usa el relleno 
 @media (prefers-reduced-motion:reduce){.wfill::before{animation:none}}
 @media print{#waterGL,.wside{display:none!important}}
 </style>
+
+<!-- =====================================================================
+     NUEVO · ESTILOS DEL SELECTOR DE FUENTE Y DEL PANEL DE HARDWARE
+     Solo reglas nuevas (.seg, .hwnote, .hwframe, .hwsteps, textarea, .hwin).
+     ===================================================================== -->
+<style>
+.modebar{display:flex;flex-wrap:wrap}
+.seg[aria-pressed="true"]{background:linear-gradient(180deg,#6cc3e2 0%,var(--water2) 100%);color:#06212b;border-color:transparent}
+.hwnote{border:1px solid rgba(240,185,46,.45);background:rgba(240,185,46,.08);border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:14px}
+.hwframe{display:block;width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.hwsteps{margin:12px 0 8px;padding-left:20px}
+.hwsteps li{margin:4px 0}
+textarea{width:100%;min-height:130px;font:13px/1.45 ui-monospace,Consolas,monospace;color:var(--ink);background:rgba(0,0,0,.25);border:1.5px solid var(--line);border-radius:8px;padding:10px;resize:vertical}
+textarea:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.hwin{width:110px;font:inherit;color:var(--ink);background:var(--card2);border:1.5px solid var(--line);border-radius:8px;padding:7px 10px}
+#hwRes{margin:10px 0 0;font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:var(--y)}
+.dot.ok{background:var(--g)}.dot.bad{background:var(--r)}
+#lvSt{margin:10px 0 0;font-weight:700}
+#lvWarn{margin:6px 0 0;color:var(--y);font-weight:600}
+</style>
 </head>
 <body>
 
@@ -158,6 +179,80 @@ html.wgl .wfill{display:none}             /* en modo WebGL no se usa el relleno 
 <p class="sub">Etapa 4 · Proyecto de Ingeniería I · Simulación digital de los 4 bloques de la Etapa 3 (umbrales unificados: 1.5 m y 2.8 m)</p>
 </header>
 <main>
+
+<!-- =====================================================================
+     NUEVO · SELECTOR DE FUENTE DE DATOS
+     Elige quién produce la lectura del Bloque 1:
+       · Modelo del HTML  -> deslizadores + "Tomar lectura" (como siempre)
+       · Hardware simulado -> Arduino + HC-SR04 en Wokwi (panel de abajo)
+     ===================================================================== -->
+<section aria-labelledby="src">
+<h2 id="src">Fuente de los datos del Bloque 1</h2>
+<div class="modebar" role="group" aria-label="Elegir la fuente de los datos">
+<button id="mModel" class="alt seg" aria-pressed="true">Modelo del HTML</button>
+<button id="mHw" class="alt seg" aria-pressed="false">Arduino simulado (copiar y pegar)</button>
+<button id="mLive" class="alt seg" aria-pressed="false">ESP32 en vivo (nube)</button>
+</div>
+<p class="note" id="mDesc" style="margin:8px 0 0"></p>
+</section>
+
+<!-- =====================================================================
+     NUEVO · PANEL "BLOQUE 1 CON HARDWARE"
+     Oculto hasta elegir el modo Arduino. Contiene:
+       1) leyenda de que el simulador es una incrustación de Wokwi
+       2) el simulador de Wokwi (marco)
+       3) instrucciones, cuadro para pegar el monitor serie y botones
+     ===================================================================== -->
+<section id="hw" aria-labelledby="hwT" hidden>
+<h2 id="hwT">Bloque 1 con hardware · Arduino + sensor HC-SR04</h2>
+<p class="hwnote"><b>Simulación incrustada.</b> El recuadro de abajo es el simulador Wokwi (wokwi.com) ejecutando un Arduino Uno con un sensor HC-SR04 en una maqueta a escala 1:10 (40 cm de maqueta = 4.00 m reales). No es hardware físico. Wokwi no simula la temperatura: el programa del Arduino emula el efecto del calor.</p>
+<iframe id="hwFrame" class="hwframe" title="Simulación de Arduino con sensor HC-SR04 en Wokwi" allow="fullscreen" allowfullscreen></iframe>
+<button id="hwFull" class="alt">Pantalla completa</button>
+<a class="note" href="https://wokwi.com/projects/479798516871787521" target="_blank" rel="noopener">Abrir Wokwi en otra pestaña</a>
+<ol class="hwsteps">
+<li>Pulsa ▶ para iniciar el simulador. Para probar otro nivel, cambia <code>"distance"</code> en la pestaña <b>diagram.json</b> (junto a sketch.ino) y pulsa ▶ otra vez:
+<table style="max-width:360px;margin-top:6px"><thead><tr><th>distance (cm)</th><th>30</th><th>20</th><th>10</th></tr></thead><tbody><tr><td>Nivel real</td><td>1.0 m</td><td>2.0 m</td><td>3.0 m</td></tr></tbody></table></li>
+<li>Copia el texto del <b>recuadro blanco que está debajo del Arduino</b> (es el monitor serie: líneas con barras <code>|</code> que se escriben solas). Selecciónalo y pulsa Ctrl+C.</li>
+<li>Pulsa <b>Pegar y procesar</b>. Si tu navegador no lo permite, pega el texto en el cuadro con Ctrl+V y pulsa <b>Procesar</b>. El nivel real es opcional.</li>
+</ol>
+<p class="note" style="margin:0">Este HTML no puede leer el simulador por sí mismo; por eso las líneas se copian y se pegan.</p>
+<label for="hwIn">Registro del Arduino (monitor serie)</label>
+<textarea id="hwIn" spellcheck="false" placeholder="Aquí aparecerá el texto copiado. Ejemplo:&#10;32 | no | 9.80 | 30.20 | 3.02 | ROJO | Web: esperando confirmacion"></textarea>
+<label for="hwReal">Nivel real del agua en m (opcional)</label>
+<input id="hwReal" class="hwin" type="text" inputmode="decimal" placeholder="3.00">
+<p class="note" style="margin:4px 0 0">Nivel real = (40 − distancia en Wokwi) / 10. Ejemplo: distancia 10 cm → 3.00 m. Si lo dejas vacío, el error aparece como «—».</p>
+<button id="hwPaste">Pegar y procesar</button>
+<button id="hwGo" class="alt">Procesar</button>
+<button id="hwClr" class="alt">Limpiar texto</button>
+<button id="hwRst" class="alt">Reiniciar histórico</button>
+<p id="hwRes" role="status"></p>
+</section>
+
+<!-- =====================================================================
+     NUEVO · PANEL "ESP32 EN VIVO (NUBE)"
+     Oculto hasta elegir ese modo. Contiene la leyenda, el simulador de
+     Wokwi (proyecto del ESP32), el indicador de conexión y los controles.
+     Las lecturas llegan solas desde un broker MQTT público.
+     ===================================================================== -->
+<section id="lv" aria-labelledby="lvT" hidden>
+<h2 id="lvT">Bloque 1 en vivo · ESP32 + sensor HC-SR04 → nube → esta página</h2>
+<p class="hwnote"><b>Simulación incrustada.</b> El recuadro de abajo es el simulador Wokwi (wokwi.com) ejecutando un ESP32 con un sensor HC-SR04 en una maqueta a escala 1:10 (40 cm de maqueta = 4.00 m reales). No es hardware físico. Wokwi no simula la temperatura: el programa del ESP32 emula el efecto del calor. Las lecturas viajan por un broker MQTT público (HiveMQ), que no es privado: no se envían datos reales ni personales.</p>
+<iframe id="lvFrame" class="hwframe" title="Simulación de ESP32 con sensor HC-SR04 en Wokwi" allow="fullscreen" allowfullscreen></iframe>
+<button id="lvFull" class="alt">Pantalla completa</button>
+<a class="note" href="https://wokwi.com/projects/479888001582937089" target="_blank" rel="noopener">Abrir Wokwi en otra pestaña</a>
+<ol class="hwsteps">
+<li>Pulsa ▶ en el simulador y espera unos 15 segundos a que se conecte (la primera vez).</li>
+<li>Para cambiar el nivel, haz clic en el dibujo del sensor y mueve su deslizador entre 2 y 40 cm:
+<table style="max-width:420px;margin-top:6px"><thead><tr><th>distancia (cm)</th><th>30</th><th>20</th><th>10</th></tr></thead><tbody><tr><td>Nivel real · estado</td><td>1.0 m · Verde</td><td>2.0 m · Amarillo</td><td>3.0 m · Rojo</td></tr></tbody></table></li>
+<li>Mira el estado de abajo: las lecturas llegan solas desde la nube, no hay que copiar nada.</li>
+</ol>
+<p id="lvSt" role="status"><span id="lvDot" class="dot"></span><span id="lvStT">Conectando a la nube…</span></p>
+<p id="lvWarn" role="status"></p>
+<p id="lvLast" class="note" style="margin:6px 0 0"></p>
+<p class="note" style="margin:6px 0 0">La nube solo transmite la lectura del sensor; por eso el nivel real y el error aparecen como «—» en el histórico.</p>
+<button id="lvPause" class="alt">Pausar recepción</button>
+<button id="lvRst" class="alt">Reiniciar histórico</button>
+</section>
 
 <!-- ============ BLOQUES 1 y 3: captación y análisis de riesgo (sin cambios) ============ -->
 <div class="grid">
@@ -483,6 +578,212 @@ try{
   let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layout,120)});
   requestAnimationFrame(frame);
 }catch(e){console.warn('Columnas de agua desactivadas:',e)}
+})();
+</script>
+
+<!-- =====================================================================
+     NUEVO · SCRIPT DEL SELECTOR Y DEL PANEL DE HARDWARE
+     Bloque aparte, dentro de try/catch: si fallara, el simulador de
+     arriba sigue igual. No modifica el código original: para cada línea
+     del Arduino llama a la MISMA función reading() del simulador, así
+     que el histórico (Bloque 2), el estado (Bloque 3) y las alertas
+     (Bloque 4) se calculan con la lógica original.
+     Truco usado: mientras se procesa una línea, la función measure()
+     devuelve el nivel medido por el Arduino en vez de calcularlo; al
+     terminar se restaura la original.
+     ===================================================================== -->
+<script>
+(function(){
+try{
+  const $=id=>document.getElementById(id);
+  const WOKWI='https://wokwi.com/projects/479798516871787521';   // proyecto público de Wokwi
+  const secB1=$('b1').closest('section'),hw=$('hw'),frame=$('hwFrame'),res=$('hwRes');
+  let loaded=false;
+
+  /* ---- 1) Selector de modo: muestra un panel u otro ---- */
+  const DESC={
+    model:'Los datos los calcula el HTML con los deslizadores (nivel, temperatura y ruido).',
+    hw:'Los datos los genera el Arduino simulado en Wokwi y se procesan en los Bloques 2, 3 y 4. Las Pruebas A y B siguen usando el modelo del HTML.'
+  };
+  function setMode(m){
+    const isHw=m==='hw';
+    secB1.hidden=isHw;hw.hidden=!isHw;                       // oculta/muestra paneles
+    $('mModel').setAttribute('aria-pressed',String(!isHw));
+    $('mHw').setAttribute('aria-pressed',String(isHw));
+    $('mDesc').textContent=isHw?DESC.hw:DESC.model;
+    if(isHw&&!loaded){frame.src=WOKWI;loaded=true}           // Wokwi se carga solo la primera vez que se pide
+  }
+  $('mModel').onclick=()=>setMode('model');
+  $('mHw').onclick=()=>setMode('hw');
+  setMode('model');
+
+  /* ---- 2) Lectura de una línea del monitor serie ----
+     Formato: T_C | compensa | dist_cm | nivel_cm | nivel_equiv_m | estado | alerta */
+  const RX=/(\d+(?:\.\d+)?)\s*\|\s*(si|no)\s*\|\s*(\d+(?:\.\d+)?)\s*\|\s*(-?\d+(?:\.\d+)?)\s*\|\s*(-?\d+(?:\.\d+)?)\s*\|\s*(VERDE|AMARILLO|ROJO)\s*\|/i;
+
+  /* ---- 3) Botón Procesar ---- */
+  $('hwGo').onclick=()=>{
+    const rows=[];let ign=0;
+    $('hwIn').value.split(/\r?\n/).forEach(l=>{
+      l=l.trim();if(!l||l.indexOf('T_C')>=0)return;          // salta vacías y el encabezado
+      const m=RX.exec(l);
+      if(m)rows.push({T:m[1],comp:m[2].toLowerCase(),nivelM:parseFloat(m[4])/10,est:m[6].toUpperCase()}); // nivel_cm / 10 = metros reales
+      else ign++;
+    });
+    if(!rows.length){res.textContent='No encontré lecturas válidas. Copia las líneas del monitor serie, por ejemplo: 32 | no | 9.80 | 30.20 | 3.02 | ROJO | ...';return}
+    const rv=$('hwReal').value.trim().replace(',','.'),real=rv===''?null:parseFloat(rv);
+    if(real!==null&&(isNaN(real)||real<0||real>4)){res.textContent='El nivel real debe ser un número entre 0 y 4 m.';return}
+
+    const orig=window.measure,lvl=$('lvl');let ok=0;
+    streak=0;                                                // cada pegado = una corrida nueva (el Arduino parte de 0 rojas seguidas)
+    try{
+      rows.forEach(r=>{
+        window.measure=()=>r.nivelM;                          // el "sensor" entrega lo que midió el Arduino
+        lvl.value=real===null?Math.max(0,Math.min(4,r.nivelM)):real;
+        reading();                                            // función ORIGINAL: histórico + estado + alertas
+        if(real===null){const e=D.live[D.live.length-1];e.real='—';e.error_cm='—'}  // sin nivel real no hay error
+        if(cls(r.nivelM).toUpperCase()===r.est)ok++;          // ¿el HTML clasifica igual que el Arduino?
+      });
+    }finally{window.measure=orig}                             // siempre se restaura measure()
+    if(real===null){                                          // vuelve a dibujar la tabla con «—»
+      document.querySelector('#logT tbody').innerHTML=D.live.slice(-8).reverse().map(r=>`<tr><td>${r.hora}</td><td>${r.real}</td><td>${r.medido}</td><td>${r.error_cm}</td><td>${r.estado}</td></tr>`).join('');
+    }
+    $('lvlV').textContent=f(lvl.value);
+    const u=rows[rows.length-1];
+    const aviso=(real!==null&&Math.abs(real-u.nivelM)>0.5)?' · AVISO: el nivel real escrito difiere más de 0.5 m del medido; revisa que sea (40 − distance) / 10.':'';
+    res.textContent=rows.length+' lectura(s) procesada(s) · Condiciones del Arduino: '+u.T+' °C, compensado: '+u.comp+' · El estado coincide con el del Arduino en '+ok+' de '+rows.length+(ign?' · '+ign+' línea(s) ignorada(s)':'')+'.'+aviso;
+  };
+
+  /* ---- 4) Botón "Pegar y procesar": lee el portapapeles, lo pone en el cuadro y procesa.
+         Si el navegador no da permiso, avisa y queda el cuadro para pegar a mano. ---- */
+  $('hwPaste').onclick=async()=>{
+    try{
+      const t=await navigator.clipboard.readText();
+      if(!t.trim()){res.textContent='El portapapeles está vacío. Copia primero el texto del monitor serie.';return}
+      $('hwIn').value=t;$('hwGo').click();
+    }catch(e){res.textContent='El navegador no permitió leer el portapapeles. Pega el texto en el cuadro (Ctrl+V) y pulsa Procesar.'}
+  };
+
+  /* ---- 5) Otros botones ---- */
+  $('hwClr').onclick=()=>{$('hwIn').value='';res.textContent=''};          // borra solo el cuadro de texto
+  $('hwRst').onclick=()=>{$('reset').click();res.textContent='Histórico reiniciado.'};  // usa el botón Reiniciar original
+  $('hwFull').onclick=()=>{if(frame.requestFullscreen)frame.requestFullscreen()};
+}catch(e){console.warn('Panel de hardware desactivado:',e)}
+})();
+</script>
+
+<!-- =====================================================================
+     NUEVO · SCRIPT DEL MODO "ESP32 EN VIVO (NUBE)"
+     Bloque aparte con try/catch. Pasos:
+       1) al elegir el modo, carga la librería MQTT (solo en ese momento)
+       2) se conecta al broker por WebSocket seguro y se suscribe al tema
+       3) cada mensaje es una línea como las del monitor serie; se valida
+          y se pasa por reading() (la función ORIGINAL), igual que en el
+          modo de copiar y pegar
+       4) lecturas fuera de rango (distancia > 40 cm) NO se procesan
+     ===================================================================== -->
+<script>
+(function(){
+try{
+  const $=id=>document.getElementById(id);
+  const WOKWI_ESP='https://wokwi.com/projects/479888001582937089';  // proyecto público del ESP32
+  const BROKER='wss://mqtt-dashboard.com:8884/mqtt';                // broker público HiveMQ (WebSocket seguro)
+  const TOPIC='sat-inundacion/yleal-unad/etapa4/lectura';           // mismo tema que publica el ESP32
+  const DESC='Los datos los genera un ESP32 simulado en Wokwi, viajan por la nube (broker MQTT público) y se procesan aquí en los Bloques 2, 3 y 4. Las Pruebas A y B siguen usando el modelo del HTML.';
+  const secB1=$('b1').closest('section'),hw=$('hw'),lv=$('lv'),frame=$('lvFrame');
+  const RX=/(\d+(?:\.\d+)?)\s*\|\s*(si|no)\s*\|\s*(\d+(?:\.\d+)?)\s*\|\s*(-?\d+(?:\.\d+)?)\s*\|\s*(-?\d+(?:\.\d+)?)\s*\|\s*(VERDE|AMARILLO|ROJO)\s*\|/i;
+  let cli=null,timer=null,loadedFrame=false,connected=false,paused=false,got=false,lastMsg=0;
+
+  /* ---- 1) Carga de la librería MQTT: primero jsDelivr y, si falla, unpkg ---- */
+  function loadLib(cb){
+    if(window.mqtt){cb(true);return}
+    const urls=['https://cdn.jsdelivr.net/npm/mqtt@5/dist/mqtt.min.js','https://unpkg.com/mqtt@5/dist/mqtt.min.js'];
+    (function next(i){
+      if(i>=urls.length){cb(false);return}
+      const sc=document.createElement('script');sc.src=urls[i];
+      sc.onload=()=>cb(true);
+      sc.onerror=()=>{sc.remove();next(i+1)};
+      document.head.appendChild(sc);
+    })(0);
+  }
+
+  /* ---- 2) Indicador de conexión ---- */
+  function setStatus(txt,cls){$('lvStT').textContent=txt;$('lvDot').className='dot '+(cls||'')}
+  function tick(){                                   // se ejecuta cada segundo mientras el modo está activo
+    if(lv.hidden)return;
+    if(!cli||!connected){setStatus('Conectando a la nube…','');return}
+    if(paused){setStatus('Recepción en pausa','');return}
+    if(!got){setStatus('Conectado a la nube · esperando datos: pulsa ▶ en el simulador','');return}
+    const sec=Math.round((Date.now()-lastMsg)/1000);
+    if(sec<=5)setStatus('En vivo · última lectura hace '+sec+' s','ok');
+    else setStatus('Sin datos desde hace '+sec+' s · ¿está pausado el simulador?','bad');
+  }
+
+  /* ---- 3) Pasa un nivel medido por los Bloques 2, 3 y 4 (misma técnica que el modo de pegar) ---- */
+  function feed(nivelM){
+    const orig=window.measure,lvl=$('lvl');
+    try{
+      window.measure=()=>nivelM;                      // el "sensor" entrega lo que midió el ESP32
+      lvl.value=Math.max(0,Math.min(4,nivelM));
+      reading();                                      // función ORIGINAL: histórico + estado + alertas
+      const e=D.live[D.live.length-1];e.real='—';e.error_cm='—';   // la nube no transmite el nivel real
+    }finally{window.measure=orig}
+    document.querySelector('#logT tbody').innerHTML=D.live.slice(-8).reverse().map(r=>`<tr><td>${r.hora}</td><td>${r.real}</td><td>${r.medido}</td><td>${r.error_cm}</td><td>${r.estado}</td></tr>`).join('');
+    $('lvlV').textContent=f(lvl.value);
+  }
+
+  /* ---- 4) Llega un mensaje del ESP32 ---- */
+  function onLine(line){
+    const m=RX.exec(line);if(!m)return;               // ignora mensajes con otro formato
+    const dist=parseFloat(m[3]),nivelCm=parseFloat(m[4]),nivelM=nivelCm/10;
+    got=true;lastMsg=Date.now();
+    if(nivelCm<-1||nivelCm>41){                       // fuera de rango: la maqueta mide 40 cm
+      $('lvWarn').textContent='Lectura fuera de rango: distancia '+dist.toFixed(1)+' cm (la maqueta mide 40 cm). No se procesa; mueve el deslizador entre 2 y 40 cm.';
+      tick();return;
+    }
+    $('lvWarn').textContent='';
+    feed(nivelM);
+    $('lvLast').textContent='Última lectura: '+m[1]+' °C · compensado: '+m[2].toLowerCase()+' · distancia '+dist.toFixed(2)+' cm · nivel '+nivelM.toFixed(2)+' m · estado según el ESP32: '+m[6].toUpperCase()+' · según este HTML: '+cls(nivelM).toUpperCase();
+    tick();
+  }
+
+  /* ---- 5) Conexión al broker ---- */
+  function connect(){
+    cli=window.mqtt.connect(BROKER,{clientId:'sat-web-'+Math.random().toString(16).slice(2,10),clean:true,reconnectPeriod:3000,connectTimeout:8000});
+    cli.on('connect',()=>{connected=true;cli.subscribe(TOPIC,{qos:0},err=>{if(err)setStatus('No se pudo suscribir al tema.','bad')});tick()});
+    cli.on('close',()=>{connected=false;tick()});
+    cli.on('error',()=>{connected=false;tick()});
+    cli.on('message',(t,msg)=>{if(!paused)onLine(msg.toString())});
+  }
+
+  /* ---- 6) Entrar y salir del modo ---- */
+  function enterLive(){
+    secB1.hidden=true;hw.hidden=true;lv.hidden=false;
+    $('mModel').setAttribute('aria-pressed','false');$('mHw').setAttribute('aria-pressed','false');$('mLive').setAttribute('aria-pressed','true');
+    $('mDesc').textContent=DESC;
+    if(!loadedFrame){frame.src=WOKWI_ESP;loadedFrame=true}   // Wokwi se carga solo la primera vez
+    streak=0;got=false;lastMsg=0;paused=false;$('lvPause').textContent='Pausar recepción';
+    setStatus('Conectando a la nube…','');
+    if(!timer)timer=setInterval(tick,1000);
+    if(cli)return;
+    loadLib(ok=>{
+      if(!ok||!window.mqtt){setStatus('No se pudo cargar la librería MQTT (la red puede estar bloqueando el CDN). Usa el modo «Arduino simulado (copiar y pegar)».','bad');return}
+      if(!lv.hidden&&!cli)connect();
+    });
+  }
+  function leaveLive(){
+    if(cli){cli.end(true);cli=null}
+    connected=false;clearInterval(timer);timer=null;
+    lv.hidden=true;$('mLive').setAttribute('aria-pressed','false');
+  }
+  $('mLive').addEventListener('click',enterLive);
+  ['mModel','mHw'].forEach(id=>$(id).addEventListener('click',()=>{if(!lv.hidden)leaveLive()}));
+
+  /* ---- 7) Botones del panel ---- */
+  $('lvPause').onclick=()=>{paused=!paused;$('lvPause').textContent=paused?'Reanudar recepción':'Pausar recepción';tick()};
+  $('lvRst').onclick=()=>{$('reset').click();$('lvLast').textContent='';$('lvWarn').textContent=''};   // usa el botón Reiniciar original
+  $('lvFull').onclick=()=>{if(frame.requestFullscreen)frame.requestFullscreen()};
+}catch(e){console.warn('Modo en vivo desactivado:',e)}
 })();
 </script>
 </body>
